@@ -171,7 +171,7 @@ function IconModule.Image(IconConfig)
 			for _, part in next, IconLabel[2].Parts do
 				local IconPartLabel = IconModule.Icon(part, Icon.Type) or { "", { ImageRectSize = Vector2.new(0, 0), ImageRectPosition = Vector2.new(0, 0) } }
 
-				local IconPart = New("ImageLabel", {
+				New("ImageLabel", {
 					Size = UDim2.new(1, 0, 1, 0),
 					BackgroundTransparency = 1,
 					ImageColor3 = Colors[1 + _].Color or nil,
