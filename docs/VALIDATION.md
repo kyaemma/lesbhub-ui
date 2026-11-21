@@ -28,9 +28,27 @@ bundle with `luau` exits 0: the chunk defines its modules and returns the
 factory. The factory was not called, because that needs Roblox `game`.
 The built factory reads `GuiParent` from its argument.
 
-## Not executed
+## Roblox client
 
-No Roblox Studio or client session. Themes, tweens, dropdown layout,
-notification motion, resize handles, and destroy/recreate of real instances
-are unchecked. The hub's own Python UI tests still target the embedded
-bundle, not this fork.
+On place `100245581145289`, Potassium could not move the hardware pointer:
+`mousemoveabs`, `mouse1click` and `mousemoverel` left the cursor in place.
+An injected drag, after the open tween settled, changed both this fork and
+the embedded bundle from 860×560 to 1000×660. That is the same resize math.
+A hardware drag was not performed.
+
+Opening set `Closed` one frame late, so a close during that delay could be
+undone. `Window:Open` and `Window:Close` now share a generation counter with
+the embedded bundle. After that change, five immediate open/close cycles,
+a cancelled reopen, a later reopen, and a second destroy matched the
+embedded bundle.
+
+With the hub palette registered before `CreateWindow`, both libraries
+applied text color 244,241,245, accepted 20 button callbacks, scrolled to
+an element, toggled transparency, and detached on destroy. Naming
+`LesbhubCustom` before `AddTheme` errors in both libraries.
+
+Construction of a window plus 40 buttons, alternating order and ignoring
+the first cold sample, was about 31–36 ms for the fork and 19–26 ms for
+the embedded bundle. Heartbeat p95 stayed near 2 ms and p99 near 3 ms
+during the interaction pass. These figures are one client, not a reason
+to rewrite the library.

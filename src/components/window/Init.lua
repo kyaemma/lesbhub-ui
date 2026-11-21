@@ -75,6 +75,7 @@ return function(Config)
 		UIElements = {},
 		CanDropdown = true,
 		Closed = false,
+		VisibilityGeneration = 0,
 		Parent = Config.Parent,
 		Destroyed = false,
 		IsFullscreen = false,
@@ -1324,15 +1325,19 @@ return function(Config)
 		if Window.Destroyed then
 			return
 		end
+		Window.VisibilityGeneration += 1
+		local generation = Window.VisibilityGeneration
+		Window.Closed = false
 		task.spawn(function()
+			task.wait(0.06)
+			if Window.Destroyed or Window.Closed or Window.VisibilityGeneration ~= generation then
+				return
+			end
 			if Window.OnOpenCallback then
 				task.spawn(function()
 					Creator.SafeCallback(Window.OnOpenCallback)
 				end)
 			end
-
-			task.wait(0.06)
-			Window.Closed = false
 
 			Window.UIElements.Main.Size = UDim2.new(Window.Size.X.Scale, Window.Size.X.Offset, 0, 100)
 
@@ -1437,6 +1442,8 @@ return function(Config)
 		end
 
 		Window.CanDropdown = false
+		Window.VisibilityGeneration += 1
+		local closeGeneration = Window.VisibilityGeneration
 		Window.Closed = true
 
 		Tween(Window.UIElements.Main, 0.9, {
@@ -1495,7 +1502,7 @@ return function(Config)
 		task.spawn(function()
 			task.wait(0.4)
 
-			if not Window.Closed then
+			if Window.Destroyed or not Window.Closed or Window.VisibilityGeneration ~= closeGeneration then
 				return
 			end
 

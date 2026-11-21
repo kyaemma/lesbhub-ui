@@ -37486,6 +37486,7 @@ UIPadding=14,
 UIElements={},
 CanDropdown=true,
 Closed=false,
+VisibilityGeneration=0,
 Parent=av.Parent,
 Destroyed=false,
 IsFullscreen=false,
@@ -38735,15 +38736,19 @@ function aw.Open(F)
 if aw.Destroyed then
 return
 end
+aw.VisibilityGeneration+=1
+local G=aw.VisibilityGeneration
+aw.Closed=false
 task.spawn(function()
+task.wait(0.06)
+if aw.Destroyed or aw.Closed or aw.VisibilityGeneration~=G then
+return
+end
 if aw.OnOpenCallback then
 task.spawn(function()
 an.SafeCallback(aw.OnOpenCallback)
 end)
 end
-
-task.wait(0.06)
-aw.Closed=false
 
 aw.UIElements.Main.Size=UDim2.new(aw.Size.X.Scale,aw.Size.X.Offset,0,100)
 
@@ -38848,6 +38853,8 @@ aw.UIElements.Main.Main.Visible=false
 end
 
 aw.CanDropdown=false
+aw.VisibilityGeneration+=1
+local H=aw.VisibilityGeneration
 aw.Closed=true
 
 ap(aw.UIElements.Main,0.9,{
@@ -38906,7 +38913,7 @@ aw.CanResize=false
 task.spawn(function()
 task.wait(0.4)
 
-if not aw.Closed then
+if aw.Destroyed or not aw.Closed or aw.VisibilityGeneration~=H then
 return
 end
 
@@ -38917,21 +38924,21 @@ aw.OpenButtonMain:Visible(true)
 end
 end)
 
-function G.Destroy(H)
+function G.Destroy(J)
 if aw.Destroyed then
 return
 end
 aw.Destroyed=true
 if aw.TabModule then
-for J,L in ipairs(aw.TabModule.Tabs)do
-if L.CancelPendingFocus then
-L.CancelPendingFocus()
+for L,M in ipairs(aw.TabModule.Tabs)do
+if M.CancelPendingFocus then
+M.CancelPendingFocus()
 end
 end
 end
-for J,L in ipairs(av.WindUI._RootConnections or{})do
-if L.Connected then
-L:Disconnect()
+for L,M in ipairs(av.WindUI._RootConnections or{})do
+if M.Connected then
+M:Disconnect()
 end
 end
 table.clear(av.WindUI._RootConnections or{})
