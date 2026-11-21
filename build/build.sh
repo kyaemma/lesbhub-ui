@@ -63,6 +63,9 @@ TIME=$((($END - $START) / 1000000))
 echo "$HEADER" > "$OUTPUT"
 echo "" >> "$OUTPUT"
 cat dist/temp.lua >> "$OUTPUT"
+# Normalize generated text before hashing or committing, including bundled dependencies.
+# Git serves the normalized bytes; keep the local artifact identical on Windows.
+node -e "const fs=require('fs');const p=process.argv[1];const s=fs.readFileSync(p,'utf8');fs.writeFileSync(p,s.replace(/\r\n/g,'\n'))" "$OUTPUT"
 rm -f dist/temp.lua
 
 SIZE=$(($(wc -c < "$OUTPUT") / 1024))
