@@ -642,7 +642,7 @@ function DropdownMenu.New(Config, Dropdown, Element, Type)
 		end
 	)
 
-	Creator.AddSignal(UserInputService.InputBegan, function(Input)
+	Creator.AddGlobalInputBegan(function(Input)
 		if
 			Input.UserInputType == Enum.UserInputType.MouseButton1
 			or Input.UserInputType == Enum.UserInputType.Touch

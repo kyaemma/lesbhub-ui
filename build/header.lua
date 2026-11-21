@@ -10,6 +10,7 @@
     
     Author: Footagesus (Footages, .ftgs, oftgs)
     Github: {{REPOSITORY}}
+    Upstream: https://github.com/Footagesus/WindUI
     Discord: {{DISCORD}}
     License: {{LICENSE}}
 ]]

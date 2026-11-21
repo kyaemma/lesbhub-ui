@@ -63,6 +63,10 @@ return function(Config)
 		HidePanelBackground = Config.HidePanelBackground or false,
 		AutoScale = Config.AutoScale ~= false,
 		OpenButton = Config.OpenButton,
+		-- Absent CloseBehavior keeps the upstream confirmation dialog.
+		-- "Hide" and "Destroy" close immediately. The hub uses "Hide".
+		CloseBehavior = Config.CloseBehavior,
+		HideMinimizeButton = Config.HideMinimizeButton == true,
 		DragFrameSize = 160,
 
 		Position = UDim2.new(0.5, 0, 0.5, 0),
@@ -1257,6 +1261,7 @@ return function(Config)
 		end
 	end)
 
+	if not Window.HideMinimizeButton then
 	Window:CreateTopbarButton("Minimize", "minus", function()
 		if Window.Close then
 			Window:Close()
@@ -1284,6 +1289,7 @@ return function(Config)
 		--     })
 		-- end
 	end, (Window.Topbar.ButtonsType == "Default" and 997 or 998), nil, Color3.fromHex("#F4C948"))
+	end
 
 	function Window:OnOpen(func)
 		Window.OnOpenCallback = func
@@ -1501,6 +1507,25 @@ return function(Config)
 		end)
 
 		function Close:Destroy()
+			if Window.Destroyed then
+				return
+			end
+			Window.Destroyed = true
+			if Window.TabModule then
+				for _, tab in ipairs(Window.TabModule.Tabs) do
+					if tab.CancelPendingFocus then
+						tab.CancelPendingFocus()
+					end
+				end
+			end
+			for _, connection in ipairs(Config.WindUI._RootConnections or {}) do
+				if connection.Connected then
+					connection:Disconnect()
+				end
+			end
+			table.clear(Config.WindUI._RootConnections or {})
+			Creator.DisconnectAll()
+
 			task.spawn(function()
 				if Window.OnDestroyCallback then
 					task.spawn(function()
@@ -1511,8 +1536,6 @@ return function(Config)
 				if Window.AcrylicPaint and Window.AcrylicPaint.Model then
 					Window.AcrylicPaint.Model:Destroy()
 				end
-
-				Window.Destroyed = true
 
 				task.wait(0.4)
 
@@ -1530,7 +1553,13 @@ return function(Config)
 		return Close
 	end
 	function Window:Destroy()
-		return Window:Close():Destroy()
+		if Window.Destroyed then
+			return
+		end
+		local closing = Window:Close()
+		if closing then
+			return closing:Destroy()
+		end
 	end
 	function Window:Toggle()
 		if Window.Closed then
@@ -1648,7 +1677,7 @@ return function(Config)
 		end)
 	end
 
-	Creator.AddSignal(UserInputService.InputBegan, function(input, isProcessed)
+	Creator.AddGlobalInputBegan(function(input, isProcessed)
 		if isProcessed then
 			return
 		end
@@ -1955,6 +1984,13 @@ return function(Config)
 	local ClickedClose = false
 
 	Window:CreateTopbarButton("Close", "x", function()
+		if Window.CloseBehavior == "Hide" then
+			Window:Close()
+			return
+		elseif Window.CloseBehavior == "Destroy" then
+			Window:Destroy()
+			return
+		end
 		if not ClickedClose then
 			if not Window.IgnoreAlerts then
 				ClickedClose = true
@@ -1998,29 +2034,37 @@ return function(Config)
 	end
 
 	local CurResizeInput = Config.WindUI.GenerateGUID()
+	local resizeEndConnection
+	local isResizing = false
+	local initialSize
+	local initialInputPosition
 
 	local function startResizing(input)
 		if Window.CanResize then
+			if resizeEndConnection then
+				resizeEndConnection:Disconnect()
+				resizeEndConnection = nil
+				Creator.CompactSignals()
+			end
 			isResizing = true
 			FullScreenIcon.Active = true
 			initialSize = Window.UIElements.Main.Size
 			initialInputPosition = input.Position
-			--Tween(FullScreenIcon, 0.12, {ImageTransparency = .65}):Play()
-			--Tween(FullScreenIcon.ImageLabel, 0.12, {ImageTransparency = 0}):Play()
 			Tween(ResizeHandle.ImageLabel, 0.1, { ImageTransparency = 0.35 }):Play()
 
-			Creator.AddSignal(input.Changed, function()
+			resizeEndConnection = Creator.AddSignal(input.Changed, function()
 				if input.UserInputState == Enum.UserInputState.End then
-					if Config.WindUI.CurrentInput and Config.WindUI.CurrentInput ~= CurResizeInput then
-						return
-					end
-
-					Config.WindUI.CurrentInput = nil
-
 					isResizing = false
 					FullScreenIcon.Active = false
-					--Tween(FullScreenIcon, 0.2, {ImageTransparency = 1}):Play()
-					--Tween(FullScreenIcon.ImageLabel, 0.17, {ImageTransparency = 1}):Play()
+					if not Config.WindUI.CurrentInput or Config.WindUI.CurrentInput == CurResizeInput then
+						Config.WindUI.CurrentInput = nil
+					end
+					local connection = resizeEndConnection
+					resizeEndConnection = nil
+					if connection then
+						connection:Disconnect()
+						Creator.CompactSignals()
+					end
 					Tween(ResizeHandle.ImageLabel, 0.17, { ImageTransparency = 0.8 }):Play()
 				end
 			end)
@@ -2035,9 +2079,10 @@ return function(Config)
 			if Config.WindUI.CurrentInput and Config.WindUI.CurrentInput ~= CurResizeInput then
 				return
 			end
-			Config.WindUI.CurrentInput = CurResizeInput
-
+			-- Claim the pointer only when a resize can actually start. Claiming
+			-- it first left a stale token whenever CanResize was false.
 			if Window.CanResize then
+				Config.WindUI.CurrentInput = CurResizeInput
 				startResizing(input)
 			end
 		end
@@ -2059,10 +2104,7 @@ return function(Config)
 					math.clamp(newSize.Y.Offset, Window.MinSize.Y, Window.MaxSize.Y)
 				)
 
-				Tween(Window.UIElements.Main, 0.08, {
-					Size = newSize,
-				}, Enum.EasingStyle.Quad, Enum.EasingDirection.Out):Play()
-
+				Window.UIElements.Main.Size = newSize
 				Window.Size = newSize
 			end
 		end

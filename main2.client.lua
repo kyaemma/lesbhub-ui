@@ -12,14 +12,14 @@ local WindUI
 
 do
 	local ok, result = pcall(function()
-		return require("./src/Init")
+		return require("./src/Init")()
 	end)
 
 	if ok then
 		WindUI = result
 	else
 		if RunService:IsStudio() or not writefile then
-			WindUI = require(ReplicatedStorage:WaitForChild("WindUI"):WaitForChild("Init"))
+			WindUI = require(ReplicatedStorage:WaitForChild("WindUI"):WaitForChild("Init"))()
 		else
 			WindUI =
 				loadstring(game:HttpGet("https://raw.githubusercontent.com/Footagesus/WindUI/main/dist/main.lua"))()

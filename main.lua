@@ -2,7 +2,7 @@
 -- This is just an example.
 -- old example
 
-local WindUI = require("./src/Init")
+local WindUI = require("./src/Init")()
 
 local Localization = WindUI:Localization({
     Enabled = true,

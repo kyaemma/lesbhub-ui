@@ -65,7 +65,8 @@ function NotificationModule.New(Config)
         Notification.CanClose = true
     end--]]
 	NotificationModule.NotificationIndex = NotificationModule.NotificationIndex + 1
-	NotificationModule.Notifications[NotificationModule.NotificationIndex] = Notification
+	local notificationId = NotificationModule.NotificationIndex
+	NotificationModule.Notifications[notificationId] = Notification
 
 	-- local UIStroke = New("UIStroke", {
 	--     ThemeTag = {
@@ -268,9 +269,16 @@ function NotificationModule.New(Config)
 		Main,
 	})
 
+	local timerThread
+
 	function Notification:Close()
 		if not Notification.Closed then
 			Notification.Closed = true
+			NotificationModule.Notifications[notificationId] = nil
+			if timerThread then
+				task.cancel(timerThread)
+				timerThread = nil
+			end
 			Tween(
 				MainContainer,
 				0.45,
@@ -280,12 +288,31 @@ function NotificationModule.New(Config)
 			):Play()
 			Tween(Main, 0.55, { Position = UDim2.new(2, 0, 1, 0) }, Enum.EasingStyle.Quint, Enum.EasingDirection.Out):Play()
 			task.wait(0.45)
-			MainContainer:Destroy()
+			if MainContainer then
+				MainContainer:Destroy()
+				MainContainer = nil
+			end
 		end
 	end
 
-	task.spawn(function()
+	function Notification:Destroy()
+		Notification.Closed = true
+		NotificationModule.Notifications[notificationId] = nil
+		if timerThread then
+			task.cancel(timerThread)
+			timerThread = nil
+		end
+		if MainContainer then
+			MainContainer:Destroy()
+			MainContainer = nil
+		end
+	end
+
+	timerThread = task.spawn(function()
 		task.wait()
+		if Notification.Closed or not MainContainer then
+			return
+		end
 		Tween(
 			MainContainer,
 			0.45,
@@ -304,6 +331,7 @@ function NotificationModule.New(Config)
 				Enum.EasingDirection.InOut
 			):Play()
 			task.wait(Notification.Duration)
+			timerThread = nil
 			Notification:Close()
 		end
 	end)
@@ -316,6 +344,14 @@ function NotificationModule.New(Config)
 
 	--Tween():Play()
 	return Notification
+end
+
+function NotificationModule.DestroyAll()
+	local pending = NotificationModule.Notifications
+	NotificationModule.Notifications = {}
+	for _, notification in pairs(pending) do
+		notification:Destroy()
+	end
 end
 
 return NotificationModule

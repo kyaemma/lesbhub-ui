@@ -123,6 +123,7 @@ function Section.New(SectionConfig, Parent, Folder, UIScale, Window)
             ChevronIconFrame.Visible = true
         end
         TabConfig.Parent = SectionFrame.Content
+        TabConfig.SidebarSection = SectionModule
         return TabModule.New(TabConfig, UIScale)
     end
     

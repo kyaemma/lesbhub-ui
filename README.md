@@ -18,6 +18,14 @@ I might rewrite this project from scratch later.
 > WindUI is currently in Beta.
 > This project is still under active development. Bugs, issues, and unstable features may occur. We’re constantly working on improvements, so please be patient and report any problems you encounter.
 
+## Lesbian Hub fork
+
+This repository is the public WindUI fork used by Lesbian Hub. It keeps the upstream MIT license and Footagesus credits. Behavior added for the hub is described in [docs/LESBHUB.md](docs/LESBHUB.md). Load a pinned build with the steps in [docs/INTEGRATION.md](docs/INTEGRATION.md).
+
+```luau
+local WindUI = loadstring(game:HttpGet("URL"))()
+```
+
 ## Credits
 
 #### Icons (https://github.com/Footagesus/Icons)

@@ -30,7 +30,7 @@ function Element:New(ElementConfig)
 		}, {
 			New("UIListLayout", {
 				Padding = UDim.new(0, 10),
-				FillDirection = "Vertical",
+				FillDirection = ElementConfig.ButtonsLayout == "Horizontal" and "Horizontal" or "Vertical",
 			}),
 		})
 
@@ -45,8 +45,21 @@ function Element:New(ElementConfig)
 				nil,
 				ElementConfig.Window.NewElements and 999 or 10
 			)
-			ButtonFrame.Size = UDim2.new(1, 0, 0, 38)
-			--ButtonFrame.AutomaticSize = "X"
+			if ElementConfig.ButtonsLayout == "Horizontal" then
+				-- Equal shares of a fixed row. Automatic size lets the label
+				-- widen the button past the window at the hub's 720px minimum.
+				local count = #ElementConfig.Buttons
+				ButtonFrame.AutomaticSize = Enum.AutomaticSize.None
+				ButtonFrame.Size = UDim2.new(1 / count, -math.ceil(10 * (count - 1) / count), 0, 38)
+				ButtonFrame.Frame.UIPadding.PaddingLeft = UDim.new(0, 8)
+				ButtonFrame.Frame.UIPadding.PaddingRight = UDim.new(0, 8)
+				ButtonFrame.Frame.TextLabel.AutomaticSize = Enum.AutomaticSize.None
+				ButtonFrame.Frame.TextLabel.Size = UDim2.new(1, Button.Icon and Button.Icon ~= "" and -29 or 0, 1, 0)
+				ButtonFrame.Frame.TextLabel.TextSize = 16
+				ButtonFrame.Frame.TextLabel.TextTruncate = Enum.TextTruncate.AtEnd
+			else
+				ButtonFrame.Size = UDim2.new(1, 0, 0, 38)
+			end
 		end
 	end
 

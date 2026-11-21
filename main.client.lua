@@ -15,14 +15,14 @@ local WindUI
 
 do
 	local ok, result = pcall(function()
-		return require("./src/Init")
+		return require("./src/Init")()
 	end)
 
 	if ok then
 		WindUI = result
 	else
 		if cloneref(game:GetService("RunService")):IsStudio() then
-			WindUI = require(cloneref(ReplicatedStorage:WaitForChild("WindUI"):WaitForChild("Init")))
+			WindUI = require(cloneref(ReplicatedStorage:WaitForChild("WindUI"):WaitForChild("Init")))()
 		else
 			WindUI =
 				loadstring(game:HttpGet("https://raw.githubusercontent.com/Footagesus/WindUI/main/dist/main.lua"))()

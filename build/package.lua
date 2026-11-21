@@ -3,12 +3,12 @@
 return [[
 {
     "name": "windui",
-    "version": "1.6.66",
+    "version": "1.6.66-lesbhub.1",
     "main": "./dist/main.lua",
-    "repository": "https://github.com/Footagesus/WindUI",
+    "repository": "https://github.com/kyaemma/lesbhub-ui",
     "discord": "https://discord.gg/ftgs-development-hub-1300692552005189632",
     "author": "Footagesus",
-    "description": "Roblox UI Library for scripts",
+    "description": "Roblox UI library for scripts. Lesbian Hub fork of Footagesus/WindUI.",
     "license": "MIT",
     "scripts": {
         "dev": "bash build/build.sh dev $INPUT_FILE",

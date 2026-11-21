@@ -36,6 +36,8 @@ return {
 				config.ElementsModule = ElementsModule
 
 				local _elementInstance, content = module:New(config)
+				content.ParentTable = tbl
+				content.Tab = Tab or tbl
 
 				if config.Flag and typeof(config.Flag) == "string" then
 					if Window.CurrentConfig then
@@ -78,6 +80,8 @@ return {
 					end
 				end
 
+				local originalDestroy = content.Destroy
+
 				if frame then
 					content.ElementFrame = frame.UIElements.Main
 					function content:SetTitle(title)
@@ -95,20 +99,39 @@ return {
 					function content:Highlight()
 						frame:Highlight()
 					end
-					function content:Destroy()
-						frame:Destroy()
+				end
 
-						table.remove(Window.AllElements, config.GlobalIndex)
-						table.remove(tbl.Elements, config.Index)
-						table.remove(Tab.Elements, config.Index)
+				if frame or originalDestroy then
+					local destroyed = false
+					function content:Destroy()
+						if destroyed then
+							return
+						end
+						destroyed = true
+						if originalDestroy then
+							originalDestroy(content)
+						else
+							frame:Destroy()
+						end
+						local function removeByIdentity(list)
+							local index = table.find(list, content)
+							if index then
+								table.remove(list, index)
+							end
+						end
+						removeByIdentity(Window.AllElements)
+						removeByIdentity(tbl.Elements)
+						if Tab and Tab.Elements ~= tbl.Elements then
+							removeByIdentity(Tab.Elements)
+						end
 						tbl:UpdateAllElementShapes(tbl)
 					end
 				end
 
-				Window.AllElements[config.Index] = content
-				tbl.Elements[config.Index] = content
-				if Tab then
-					Tab.Elements[config.Index] = content
+				table.insert(Window.AllElements, content)
+				table.insert(tbl.Elements, content)
+				if Tab and Tab.Elements ~= tbl.Elements then
+					table.insert(Tab.Elements, content)
 				end
 
 				if Window.NewElements then

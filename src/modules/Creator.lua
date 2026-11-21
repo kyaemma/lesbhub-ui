@@ -29,10 +29,14 @@ Creator = {
 	Themes = nil,
 	Icons = Icons,
 	Signals = {},
-	Objects = {},
-	LocalizationObjects = {},
+	InputBeganHandlers = {},
+	InputBeganConnection = nil,
+	-- Weak keys drop theme and font entries when the instance is collected.
+	-- Values must not retain the instance, or the key stays alive.
+	Objects = setmetatable({}, { __mode = "k" }),
+	LocalizationObjects = setmetatable({}, { __mode = "k" }),
 	UIScale = 1,
-	FontObjects = {},
+	FontObjects = setmetatable({}, { __mode = "k" }),
 	Language = string.match(LocalizationService.SystemLocaleId, "^[a-z]+"),
 	Request = http_request or (syn and syn.request) or request,
 	DefaultProperties = {
@@ -136,17 +140,93 @@ function Creator.Init(WindUITable)
 	DynamicShapeModule:Init(Creator)
 end
 
+-- lesbhub:compact-start
+function Creator.CompactSignals()
+	for index = #Creator.Signals, 1, -1 do
+		local connection = Creator.Signals[index]
+		if not connection or not connection.Connected then
+			table.remove(Creator.Signals, index)
+		end
+	end
+end
+-- lesbhub:compact-end
+
 function Creator.AddSignal(Signal, Function)
+	-- Compact only on the 64-connection boundary. Scanning every connect
+	-- dominated startup when thousands of short-lived listeners accumulated.
+	if #Creator.Signals >= 64 and #Creator.Signals % 64 == 0 then
+		Creator.CompactSignals()
+	end
 	local conn = Signal:Connect(Function)
 	table.insert(Creator.Signals, conn)
 	return conn
 end
 
-function Creator.DisconnectAll()
-	for idx, signal in next, Creator.Signals do
-		local Connection = table.remove(Creator.Signals, idx)
-		Connection:Disconnect()
+function Creator.AddGlobalInputBegan(callback, pointerOnly)
+	local handler = {
+		Callback = callback,
+		PointerOnly = pointerOnly == true,
+		Connected = true,
+	}
+	table.insert(Creator.InputBeganHandlers, handler)
+
+	if not Creator.InputBeganConnection or not Creator.InputBeganConnection.Connected then
+		Creator.InputBeganConnection = Creator.AddSignal(UserInputService.InputBegan, function(input, gameProcessed)
+			local pointer = input.UserInputType == Enum.UserInputType.MouseButton1
+				or input.UserInputType == Enum.UserInputType.Touch
+			local focused = UserInputService:GetFocusedTextBox()
+
+			for index = #Creator.InputBeganHandlers, 1, -1 do
+				local entry = Creator.InputBeganHandlers[index]
+				if not entry or not entry.Connected then
+					table.remove(Creator.InputBeganHandlers, index)
+				elseif not entry.PointerOnly or pointer then
+					entry.Callback(input, gameProcessed, focused)
+				end
+			end
+		end)
 	end
+
+	return {
+		Disconnect = function()
+			if not handler.Connected then
+				return
+			end
+			handler.Connected = false
+			handler.Callback = nil
+		end,
+	}
+end
+
+function Creator.DisconnectAll()
+	for index = #Creator.Signals, 1, -1 do
+		local connection = Creator.Signals[index]
+		Creator.Signals[index] = nil
+		if connection and connection.Connected then
+			pcall(function()
+				connection:Disconnect()
+			end)
+		end
+	end
+	table.clear(Creator.Signals)
+	for _, handler in pairs(Creator.InputBeganHandlers) do
+		handler.Connected = false
+		handler.Callback = nil
+	end
+	table.clear(Creator.InputBeganHandlers)
+	Creator.InputBeganConnection = nil
+
+	if WindUI and WindUI.NotificationModule and WindUI.NotificationModule.DestroyAll then
+		WindUI.NotificationModule.DestroyAll()
+	end
+	if WindUI then
+		WindUI.CurrentInput = nil
+	end
+
+	table.clear(Creator.Objects)
+	table.clear(Creator.LocalizationObjects)
+	table.clear(Creator.FontObjects)
+	table.clear(Creator.ThemeChangeCallbacks)
 end
 
 function Creator.SafeCallback(Function, ...)
@@ -223,14 +303,14 @@ function Creator.SetTheme(Theme)
 end
 
 function Creator.AddFontObject(Object)
-	table.insert(Creator.FontObjects, Object)
+	Creator.FontObjects[Object] = true
 	Creator.UpdateFont(Creator.Font)
 end
 
 function Creator.UpdateFont(FontId)
 	Creator.Font = FontId
-	for _, Obj in next, Creator.FontObjects do
-		Obj.FontFace = Font.new(FontId, Obj.FontFace.Weight, Obj.FontFace.Style)
+	for object in pairs(Creator.FontObjects) do
+		object.FontFace = Font.new(FontId, object.FontFace.Weight, object.FontFace.Style)
 	end
 end
 
@@ -315,7 +395,7 @@ function Creator.AddThemeObject(Object, Properties, skipUpdate)
 			Creator.Objects[Object].Properties[prop] = value
 		end
 	else
-		Creator.Objects[Object] = { Object = Object, Properties = Properties }
+		Creator.Objects[Object] = { Properties = Properties }
 	end
 
 	if not skipUpdate then
@@ -324,51 +404,48 @@ function Creator.AddThemeObject(Object, Properties, skipUpdate)
 	return Object
 end
 
-function Creator.AddLangObject(idx)
-	local currentObj = Creator.LocalizationObjects[idx]
-	if not currentObj then
+function Creator.AddLangObject(object)
+	local translationId = Creator.LocalizationObjects[object]
+	if not translationId then
 		return
 	end
 
-	local Object = currentObj.Object
-
-	Creator.SetLangForObject(idx)
-
-	return Object
+	Creator.SetLangForObject(object)
+	return object
 end
 
 function Creator.UpdateTheme(TargetObject, isTween, isTweenTarget, Duration, EasingStyle, EasingDirection)
-	local function ApplyTheme(objData)
+	local function ApplyTheme(object, objData)
 		for Property, ColorKey in pairs(objData.Properties or {}) do
 			local value = Creator.GetThemeProperty(ColorKey, Creator.Theme)
 			if value ~= nil then
 				if typeof(value) == "Color3" then
-					local gradient = objData.Object:FindFirstChild("LibraryGradient")
+					local gradient = object:FindFirstChild("LibraryGradient")
 					if gradient then
 						gradient:Destroy()
 					end
 
 					if isTweenTarget then
 						Creator.Tween(
-							objData.Object,
+							object,
 							Duration or 0.2,
 							{ [Property] = value },
 							EasingStyle or Enum.EasingStyle.Quint,
 							EasingDirection or Enum.EasingDirection.Out
 						):Play()
 					elseif isTween then
-						Creator.Tween(objData.Object, 0.08, { [Property] = value }):Play()
+						Creator.Tween(object, 0.08, { [Property] = value }):Play()
 					else
-						objData.Object[Property] = value
+						object[Property] = value
 					end
 				elseif typeof(value) == "table" and value.Color and value.Transparency then
-					objData.Object[Property] = Color3.new(1, 1, 1)
+					object[Property] = Color3.new(1, 1, 1)
 
-					local gradient = objData.Object:FindFirstChild("LibraryGradient")
+					local gradient = object:FindFirstChild("LibraryGradient")
 					if not gradient then
 						gradient = Instance.new("UIGradient")
 						gradient.Name = "LibraryGradient"
-						gradient.Parent = objData.Object
+						gradient.Parent = object
 					end
 
 					gradient.Color = value.Color
@@ -382,20 +459,20 @@ function Creator.UpdateTheme(TargetObject, isTween, isTweenTarget, Duration, Eas
 				elseif typeof(value) == "number" then
 					if isTweenTarget then
 						Creator.Tween(
-							objData.Object,
+							object,
 							Duration or 0.2,
 							{ [Property] = value },
 							EasingStyle or Enum.EasingStyle.Quint,
 							EasingDirection or Enum.EasingDirection.Out
 						):Play()
 					elseif isTween then
-						Creator.Tween(objData.Object, 0.08, { [Property] = value }):Play()
+						Creator.Tween(object, 0.08, { [Property] = value }):Play()
 					else
-						objData.Object[Property] = value
+						object[Property] = value
 					end
 				end
 			else
-				local gradient = objData.Object:FindFirstChild("LibraryGradient")
+				local gradient = object:FindFirstChild("LibraryGradient")
 				if gradient then
 					gradient:Destroy()
 				end
@@ -406,11 +483,11 @@ function Creator.UpdateTheme(TargetObject, isTween, isTweenTarget, Duration, Eas
 	if TargetObject then
 		local objData = Creator.Objects[TargetObject]
 		if objData then
-			ApplyTheme(objData)
+			ApplyTheme(TargetObject, objData)
 		end
 	else
-		for _, objData in pairs(Creator.Objects) do
-			ApplyTheme(objData)
+		for object, objData in pairs(Creator.Objects) do
+			ApplyTheme(object, objData)
 		end
 	end
 end
@@ -420,28 +497,25 @@ function Creator.SetThemeTag(Object, ThemeTag, Duration, EasingStyle, EasingDire
 	Creator.UpdateTheme(Object, false, true, Duration, EasingStyle, EasingDirection)
 end
 
-function Creator.SetLangForObject(index)
+function Creator.SetLangForObject(object)
 	if Creator.Localization and Creator.Localization.Enabled then
-		local data = Creator.LocalizationObjects[index]
-		if not data then
+		local translationId = Creator.LocalizationObjects[object]
+		if not translationId then
 			return
 		end
 
-		local obj = data.Object
-		local translationId = data.TranslationId
-
 		local translations = Creator.Localization.Translations[Creator.Language]
 		if translations and translations[translationId] then
-			obj.Text = translations[translationId]
+			object.Text = translations[translationId]
 		else
 			local enTranslations = Creator.Localization
 					and Creator.Localization.Translations
 					and Creator.Localization.Translations.en
 				or nil
 			if enTranslations and enTranslations[translationId] then
-				obj.Text = enTranslations[translationId]
+				object.Text = enTranslations[translationId]
 			else
-				obj.Text = "[" .. translationId .. "]"
+				object.Text = "[" .. translationId .. "]"
 			end
 		end
 	end
@@ -449,21 +523,11 @@ end
 
 function Creator:ChangeTranslationKey(object, newKey)
 	if Creator.Localization and Creator.Localization.Enabled then
-		local ParsedKey = string.match(newKey, "^" .. Creator.Localization.Prefix .. "(.+)")
-		if ParsedKey then
-			for i, data in ipairs(Creator.LocalizationObjects) do
-				if data.Object == object then
-					data.TranslationId = ParsedKey
-					Creator.SetLangForObject(i)
-					return
-				end
-			end
-
-			table.insert(Creator.LocalizationObjects, {
-				TranslationId = ParsedKey,
-				Object = object,
-			})
-			Creator.SetLangForObject(#Creator.LocalizationObjects)
+		local parsedKey = type(newKey) == "string"
+			and string.match(newKey, "^" .. Creator.Localization.Prefix .. "(.+)")
+		if parsedKey then
+			Creator.LocalizationObjects[object] = parsedKey
+			Creator.SetLangForObject(object)
 		end
 	end
 end
@@ -473,12 +537,11 @@ function Creator.UpdateLang(newLang)
 		Creator.Language = newLang
 	end
 
-	for i = 1, #Creator.LocalizationObjects do
-		local data = Creator.LocalizationObjects[i]
-		if data.Object and data.Object.Parent ~= nil then
-			Creator.SetLangForObject(i)
+	for object in pairs(Creator.LocalizationObjects) do
+		if object.Parent ~= nil then
+			Creator.SetLangForObject(object)
 		else
-			Creator.LocalizationObjects[i] = nil
+			Creator.LocalizationObjects[object] = nil
 		end
 	end
 end
@@ -517,13 +580,11 @@ function Creator.New(Name, Properties, Children)
 		if Name ~= "ThemeTag" then
 			Object[Name] = Value
 		end
-		if Creator.Localization and Creator.Localization.Enabled and Name == "Text" then
+		if Creator.Localization and Creator.Localization.Enabled and Name == "Text" and type(Value) == "string" then
 			local TranslationId = string.match(Value, "^" .. Creator.Localization.Prefix .. "(.+)")
 			if TranslationId then
-				local currentId = #Creator.LocalizationObjects + 1
-				Creator.LocalizationObjects[currentId] = { TranslationId = TranslationId, Object = Object }
-
-				Creator.SetLangForObject(currentId)
+				Creator.LocalizationObjects[Object] = TranslationId
+				Creator.SetLangForObject(Object)
 			end
 		end
 	end
@@ -649,18 +710,16 @@ function Creator.Drag(mainFrame, dragFrames, ondrag)
 		end
 
 		local delta = input.Position - dragStart
-		Creator.Tween(mainFrame, 0.02, {
-			Position = UDim2.new(
-				startPos.X.Scale,
-				startPos.X.Offset + delta.X,
-				startPos.Y.Scale,
-				startPos.Y.Offset + delta.Y
-			),
-		}):Play()
+		mainFrame.Position = UDim2.new(
+			startPos.X.Scale,
+			startPos.X.Offset + delta.X,
+			startPos.Y.Scale,
+			startPos.Y.Offset + delta.Y
+		)
 	end
 
 	for _, dragFrame in pairs(dragFrames) do
-		dragFrame.InputBegan:Connect(function(input)
+		Creator.AddSignal(dragFrame.InputBegan, function(input)
 			if not DragModule.CanDraggable or dragging then
 				return
 			end
@@ -688,7 +747,7 @@ function Creator.Drag(mainFrame, dragFrames, ondrag)
 		end)
 	end
 
-	UserInputService.InputChanged:Connect(function(input)
+	Creator.AddSignal(UserInputService.InputChanged, function(input)
 		if not dragging then
 			return
 		end
@@ -707,7 +766,7 @@ function Creator.Drag(mainFrame, dragFrames, ondrag)
 		end
 	end)
 
-	UserInputService.InputEnded:Connect(function(input)
+	Creator.AddSignal(UserInputService.InputEnded, function(input)
 		if not dragging or WindUI.CurrentInput ~= CurInput then
 			return
 		end

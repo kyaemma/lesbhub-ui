@@ -51,6 +51,7 @@ function TabModule.New(Config, UIScale)
 		CustomEmptyPage = (Config.CustomEmptyPage and next(Config.CustomEmptyPage) ~= nil) and Config.CustomEmptyPage
 			or { Icon = "lucide:frown", IconSize = 48, Title = "This tab is Empty", Desc = nil },
 		Border = Config.Border,
+		SidebarSection = Config.SidebarSection,
 		Selected = false,
 		Index = nil,
 		Parent = Config.Parent,
@@ -410,6 +411,7 @@ function TabModule.New(Config, UIScale)
 			if MouseConn then
 				MouseConn:Disconnect()
 				MouseConn = nil
+				Creator.CompactSignals()
 			end
 			if ToolTip then
 				ToolTip:Close()
@@ -424,29 +426,60 @@ function TabModule.New(Config, UIScale)
 		end
 	end)
 
-	function Tab:ScrollToTheElement(elemindex)
-		Tab.UIElements.ContainerFrame.ScrollingEnabled = false
-
-		Creator.Tween(Tab.UIElements.ContainerFrame, 0.45, {
-			CanvasPosition = Vector2.new(
-				0,
-				Tab.Elements[elemindex].ElementFrame.AbsolutePosition.Y
-					- Tab.UIElements.ContainerFrame.AbsolutePosition.Y
-					- Tab.UIElements.ContainerFrame.UIPadding.PaddingTop.Offset
-			),
-		}, Enum.EasingStyle.Quint, Enum.EasingDirection.Out):Play()
-
-		task.spawn(function()
-			task.wait(0.48)
-
-			if Tab.Elements[elemindex].Highlight then
-				Tab.Elements[elemindex]:Highlight()
-			end
-			Tab.UIElements.ContainerFrame.ScrollingEnabled = true
-		end)
-
-		return Tab
+	function Tab:CancelPendingFocus()
+		if Tab.FocusThread then
+			task.cancel(Tab.FocusThread)
+			Tab.FocusThread = nil
+		end
 	end
+
+	-- lesbhub:focus-start
+	function Tab:ScrollToTheElement(destination)
+		local element = type(destination) == "number" and Tab.Elements[destination] or destination
+		if Window.Destroyed or not element or not table.find(Tab.Elements, element) then
+			return false
+		end
+		local frame = element.ElementFrame
+		if not frame or not frame.Parent then
+			return false
+		end
+		local parent = element.ParentTable
+		local seen = {}
+		while parent and parent ~= Tab and not seen[parent] do
+			seen[parent] = true
+			if parent.Open then
+				parent:Open(true)
+			end
+			parent = parent.ParentTable
+		end
+		Tab:CancelPendingFocus()
+		Tab.FocusThread = task.delay(0.36, function()
+			Tab.FocusThread = nil
+			if Window.Destroyed or not Tab.Selected or not frame.Parent then
+				return
+			end
+			if not table.find(Tab.Elements, element) then
+				return
+			end
+			local scroll = Tab.UIElements.ContainerFrame
+			if not scroll or not scroll.Parent or not frame:IsDescendantOf(scroll) then
+				return
+			end
+			local scale = WindUI.UIScale > 0 and WindUI.UIScale or 1
+			local position = scroll.CanvasPosition.Y
+				+ (frame.AbsolutePosition.Y - scroll.AbsolutePosition.Y) / scale
+				- scroll.UIPadding.PaddingTop.Offset
+			scroll.CanvasPosition = Vector2.new(
+				0,
+				math.clamp(position, 0, math.max(0, (scroll.AbsoluteCanvasSize.Y - scroll.AbsoluteSize.Y) / scale))
+			)
+			if element.Highlight then
+				element:Highlight()
+			end
+		end)
+		return true
+	end
+	-- lesbhub:focus-end
 
 	-- yo
 
@@ -503,6 +536,9 @@ function TabModule.New(Config, UIScale)
 	end
 
 	function Tab:Select()
+		if Tab.SidebarSection then
+			Tab.SidebarSection:Open()
+		end
 		return TabModule:SelectTab(Tab.Index)
 	end
 

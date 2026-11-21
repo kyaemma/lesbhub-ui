@@ -1,3 +1,6 @@
+return function(options)
+	options = typeof(options) == "table" and options or {}
+
 local WindUI = {
 	Window = nil,
 	Theme = nil,
@@ -44,27 +47,30 @@ end
 
 local CurInput = WindUI.GenerateGUID()
 
-UserInputService.InputBegan:Connect(function(Input, GameProcessed)
-	--[[if GameProcessed then
+WindUI._RootConnections = {}
+local function trackRoot(signal, callback)
+	local connection = signal:Connect(callback)
+	table.insert(WindUI._RootConnections, connection)
+	return connection
+end
+
+trackRoot(UserInputService.InputBegan, function(Input)
+	if
+		Input.UserInputType ~= Enum.UserInputType.MouseButton1
+		and Input.UserInputType ~= Enum.UserInputType.Touch
+	then
 		return
-	end]]
+	end
 
 	task.defer(function()
-		if
-			Input.UserInputType == Enum.UserInputType.MouseButton1
-			or Input.UserInputType == Enum.UserInputType.Touch
-		then
-			if WindUI.CurrentInput and WindUI.CurrentInput ~= CurInput then
-				return
-			end
-
-			WindUI.CurrentInput = CurInput
-			--print(CurInput)
-			--WindUI.InputStartedOnUI = false
+		if WindUI.CurrentInput and WindUI.CurrentInput ~= CurInput then
+			return
 		end
+
+		WindUI.CurrentInput = CurInput
 	end)
 end)
-UserInputService.InputEnded:Connect(function(Input, GameProcessed)
+trackRoot(UserInputService.InputEnded, function(Input)
 	if Input.UserInputType == Enum.UserInputType.MouseButton1 or Input.UserInputType == Enum.UserInputType.Touch then
 		if WindUI.CurrentInput and WindUI.CurrentInput ~= CurInput then
 			return
@@ -94,7 +100,7 @@ local Acrylic = require("./utils/Acrylic/Init")
 
 local ProtectGui = protectgui or (syn and syn.protect_gui) or function() end
 
-local GUIParent = gethui and gethui() or (CoreGui or LocalPlayer:WaitForChild("PlayerGui"))
+local GUIParent = options.GuiParent or (gethui and gethui() or (CoreGui or LocalPlayer:WaitForChild("PlayerGui")))
 
 local UIScaleObj = New("UIScale", {
 	Scale = WindUI.UIScale,
@@ -437,3 +443,4 @@ function WindUI:CreateWindow(Config)
 end
 
 return WindUI
+end
