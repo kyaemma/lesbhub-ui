@@ -113,7 +113,9 @@ function Element:New(Config)
 		end
 	)
 
+	local cancelCapture
 	function Keybind:Lock()
+		if cancelCapture and Keybind.Picking then cancelCapture() end
 		Keybind.Locked = true
 		CanCallback = false
 		return Keybind.KeybindFrame:Lock(Keybind.LockedTitle)
@@ -125,6 +127,7 @@ function Element:New(Config)
 	end
 
 	function Keybind:Set(v)
+		if cancelCapture and Keybind.Picking then cancelCapture() end
 		local normalizedValue = CanonicalInput(v)
 		Keybind.Value = normalizedValue
 		Keybind.UIElements.Keybind.Frame.Frame.TextLabel.Text = normalizedValue
@@ -134,49 +137,53 @@ function Element:New(Config)
 		Keybind:Lock()
 	end
 
-	local EndedEvent
+	local captureConnections = {}
+	local destroyed = false
+	cancelCapture = function()
+		for _, connection in ipairs(captureConnections) do connection:Disconnect() end
+		table.clear(captureConnections)
+		Keybind.Picking = false
+		if not destroyed then Keybind.UIElements.Keybind.Frame.Frame.TextLabel.Text = Keybind.Value end
+	end
+	local function capture(signal, callback)
+		table.insert(captureConnections, Creator.AddSignal(signal, callback))
+	end
 
 	Creator.AddSignal(Keybind.KeybindFrame.UIElements.Main.MouseButton1Click, function()
-		if CanCallback then
-			if Keybind.CanChange then
-				Keybind.Picking = true
-				Keybind.UIElements.Keybind.Frame.Frame.TextLabel.Text = "..."
-
-				--task.wait(0.2)
-
-				local Event
-				Event = Creator.AddSignal(UserInputService.InputBegan, function(Input)
-					local Key = InputName(Input)
-					if not Key or FilteredBlacklist[Key] then
-						return
-					end
-
-					if EndedEvent then
-						EndedEvent:Disconnect()
-						EndedEvent = nil
-						Creator.CompactSignals()
-					end
-
-					EndedEvent = Creator.AddSignal(UserInputService.InputEnded, function(Ended)
-						if Key and InputName(Ended) == Key then
-							Keybind.Picking = false
-
-							Keybind.UIElements.Keybind.Frame.Frame.TextLabel.Text = Key
-							Keybind.Value = Key
-
-							Event:Disconnect()
-							EndedEvent:Disconnect()
-							Event = nil
-							EndedEvent = nil
-							Creator.CompactSignals()
-						end
-					end)
+		if not CanCallback or Keybind.Picking or destroyed or not Keybind.CanChange then return end
+		Keybind.Picking = true
+		Keybind.UIElements.Keybind.Frame.Frame.TextLabel.Text = "..."
+		local candidate
+		capture(UserInputService.WindowFocusReleased, cancelCapture)
+		local ancestor = Keybind.KeybindFrame.UIElements.Main
+		while ancestor do
+			local observed = ancestor
+			if observed:IsA("GuiObject") then
+				capture(observed:GetPropertyChangedSignal("Visible"), function()
+					if not observed.Visible then cancelCapture() end
+				end)
+			elseif observed:IsA("ScreenGui") then
+				capture(observed:GetPropertyChangedSignal("Enabled"), function()
+					if not observed.Enabled then cancelCapture() end
 				end)
 			end
+			ancestor = ancestor.Parent
 		end
+		capture(Keybind.KeybindFrame.UIElements.Main.Destroying, cancelCapture)
+		capture(UserInputService.InputBegan, function(input)
+			local key = InputName(input)
+			if key == "Escape" then cancelCapture(); return end
+			if not candidate and key and not FilteredBlacklist[key] then candidate = key end
+		end)
+		capture(UserInputService.InputEnded, function(input)
+			if not candidate or InputName(input) ~= candidate then return end
+			local key = candidate
+			cancelCapture()
+			if not destroyed then Keybind:Set(key) end
+		end)
 	end)
 
-	Creator.AddGlobalInputBegan(function(input, gpe, focusedTextBox)
+	local inputHandle = Creator.AddGlobalInputBegan(function(input, gpe, focusedTextBox)
 		if focusedTextBox then
 			return
 		end
@@ -192,6 +199,14 @@ function Element:New(Config)
 			Creator.SafeCallback(Keybind.Callback, name)
 		end
 	end)
+
+	function Keybind:Destroy()
+		if destroyed then return end
+		cancelCapture()
+		destroyed = true
+		inputHandle:Disconnect()
+		Keybind.KeybindFrame:Destroy()
+	end
 
 	return Keybind.__type, Keybind
 end

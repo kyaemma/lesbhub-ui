@@ -457,12 +457,14 @@ return function(Config)
 				--Tween(Main, 0.12, { ImageTransparency = Element.Color and 0.15 or 0.9 }):Play()
 				Tween(Hover, 0.12, { ImageTransparency = 0.9 }):Play()
 				Tween(HoverOutline, 0.12, { ImageTransparency = 0.8 }):Play()
-				Creator.AddSignal(Main.MouseMoved, function(x, y)
-					Hover.HoverGradient.Offset =
-						Vector2.new(((x - Main.AbsolutePosition.X) / Main.AbsoluteSize.X) - 0.5, 0)
-					HoverOutline.HoverGradient.Offset =
-						Vector2.new(((x - Main.AbsolutePosition.X) / Main.AbsoluteSize.X) - 0.5, 0)
-				end)
+
+			end
+		end)
+		Creator.AddSignal(Main.MouseMoved, function(x)
+			if CanHover and Main.AbsoluteSize.X > 0 then
+				local offset = Vector2.new(((x - Main.AbsolutePosition.X) / Main.AbsoluteSize.X) - 0.5, 0)
+				Hover.HoverGradient.Offset = offset
+				HoverOutline.HoverGradient.Offset = offset
 			end
 		end)
 		Creator.AddSignal(Main.InputEnded, function()

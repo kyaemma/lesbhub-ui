@@ -3,7 +3,7 @@
 return [[
 {
     "name": "windui",
-    "version": "1.6.66-lesbhub.1",
+    "version": "1.6.66-lesbhub.2",
     "main": "./dist/main.lua",
     "repository": "https://github.com/kyaemma/lesbhub-ui",
     "discord": "https://discord.gg/ftgs-development-hub-1300692552005189632",

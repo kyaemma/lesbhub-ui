@@ -20,6 +20,7 @@ local TabBackgroundTransparency = 0.67
 
 function DropdownMenu.New(Config, Dropdown, Element, Type)
 	local DropdownModule = {}
+	local destroyed, callbackGeneration, transitionGeneration = false, 0, 0
 
 	if not Dropdown.Callback then
 		Type = "Menu"
@@ -114,7 +115,13 @@ function DropdownMenu.New(Config, Dropdown, Element, Type)
 		end
 	end
 
-	function UpdatePosition()
+	Creator.AddSignal(Dropdown.UIElements.UIListLayout:GetPropertyChangedSignal("AbsoluteContentSize"), function()
+		if destroyed or Config.Window.Destroyed then return end
+		RecalculateCanvasSize()
+		RecalculateListSize()
+	end)
+
+	local function UpdatePosition()
 		local button = Dropdown.UIElements.Dropdown or Dropdown.DropdownFrame.UIElements.Main
 		local menu = Dropdown.UIElements.MenuCanvas
 
@@ -173,25 +180,18 @@ function DropdownMenu.New(Config, Dropdown, Element, Type)
 		end
 	end
 
-	local function Callback(customCallback)
+	local function Callback(customCallback, suppressCallback)
+		callbackGeneration += 1
+		local generation = callbackGeneration
 		DropdownModule:Display()
-		if Dropdown.Locked then
-			return
-		end
-
-		if Dropdown.Callback then
+		if suppressCallback or Dropdown.Locked or destroyed then return end
+		local callback = Dropdown.Callback or customCallback
+		local value = Dropdown.Value
+		if Dropdown.Multi and typeof(value) == "table" then value = table.clone(value) end
+		if callback then
 			task.spawn(function()
-				if Dropdown.Locked then
-					return
-				end
-				Creator.SafeCallback(Dropdown.Callback, Dropdown.Value)
-			end)
-		else
-			task.spawn(function()
-				if Dropdown.Locked then
-					return
-				end
-				Creator.SafeCallback(customCallback)
+				if destroyed or Config.Window.Destroyed or Dropdown.Locked or generation ~= callbackGeneration then return end
+				Creator.SafeCallback(callback, value)
 			end)
 		end
 	end
@@ -255,8 +255,8 @@ function DropdownMenu.New(Config, Dropdown, Element, Type)
 		end
 	end
 
-	function DropdownModule:Refresh(Values)
-		if Config.Window.Destroyed then
+	function DropdownModule:Refresh(Values, suppressCallback)
+		if destroyed or Config.Window.Destroyed then
 			return
 		end
 
@@ -267,6 +267,7 @@ function DropdownMenu.New(Config, Dropdown, Element, Type)
 		end
 
 		Dropdown.Tabs = {}
+		Dropdown.Values = Values
 
 		if Dropdown.SearchBarEnabled then
 			if not SearchLabel then
@@ -277,9 +278,9 @@ function DropdownMenu.New(Config, Dropdown, Element, Type)
 						else
 							tab.UIElements.TabItem.Visible = false
 						end
-						RecalculateListSize()
-						RecalculateCanvasSize()
 					end
+					RecalculateListSize()
+					RecalculateCanvasSize()
 				end, true)
 				SearchLabel.Size = UDim2.new(1, 0, 0, Element.SearchBarHeight)
 				SearchLabel.Position = UDim2.new(0, 0, 0, 0)
@@ -461,8 +462,6 @@ function DropdownMenu.New(Config, Dropdown, Element, Type)
 
 				Dropdown.Tabs[Index] = TabMain
 
-				DropdownModule:Display()
-
 				if Type == "Dropdown" then
 					Creator.AddSignal(TabMain.UIElements.TabItem.MouseButton1Click, function()
 						if Dropdown.Locked or TabMain.Locked then
@@ -544,8 +543,6 @@ function DropdownMenu.New(Config, Dropdown, Element, Type)
 					end)
 				end
 
-				RecalculateCanvasSize()
-				RecalculateListSize()
 			else
 				require("../../elements/Divider"):New({ Parent = Dropdown.UIElements.Menu.Frame.ScrollingFrame })
 			end
@@ -566,14 +563,15 @@ function DropdownMenu.New(Config, Dropdown, Element, Type)
 			Dropdown.UIElements.MenuCanvas.Size.Y.Scale,
 			Dropdown.UIElements.MenuCanvas.Size.Y.Offset
 		)
-		Callback()
-
-		Dropdown.Values = Values
+		RecalculateCanvasSize()
+		RecalculateListSize()
+		Callback(nil, suppressCallback)
 	end
 
-	DropdownModule:Refresh(Dropdown.Values)
+	DropdownModule:Refresh(Dropdown.Values, Dropdown.SuppressInitialCallback)
 
-	function DropdownModule:Select(Items)
+	function DropdownModule:Select(Items, suppressCallback)
+		if destroyed or Config.Window.Destroyed then return end
 		if Items then
 			Dropdown.Value = Items
 		else
@@ -583,14 +581,44 @@ function DropdownMenu.New(Config, Dropdown, Element, Type)
 				Dropdown.Value = nil
 			end
 		end
-		DropdownModule:Refresh(Dropdown.Values)
+		if Dropdown.Multi and typeof(Dropdown.Value) == "string" then
+			for _, value in ipairs(Dropdown.Values) do
+				if (typeof(value) == "table" and value.Title or value) == Dropdown.Value then
+					Dropdown.Value = { value }
+					break
+				end
+			end
+		end
+		local selected = {}
+		if Dropdown.Multi and typeof(Dropdown.Value) == "table" then
+			for _, item in ipairs(Dropdown.Value) do
+				selected[typeof(item) == "table" and item.Title or item] = true
+			end
+		end
+		local current = typeof(Dropdown.Value) == "table" and Dropdown.Value.Title or Dropdown.Value
+		for _, tab in pairs(Dropdown.Tabs) do
+			local isSelected = Dropdown.Multi and selected[tab.Name] == true or (not Dropdown.Multi and current == tab.Name)
+			if tab.Selected ~= isSelected then
+				tab.Selected = isSelected
+				if not tab.Locked then
+					tab.UIElements.TabItem.ImageTransparency = isSelected and TabBackgroundTransparency or 1
+					tab.UIElements.TabItem.Frame.Title.TextLabel.TextTransparency = isSelected and 0 or 0.4
+					if tab.UIElements.TabIcon then
+						tab.UIElements.TabIcon.ImageLabel.ImageTransparency = isSelected and 0 or 0.2
+					end
+				end
+			end
+		end
+		Callback(nil, suppressCallback)
 	end
 
 	RecalculateListSize()
 	RecalculateCanvasSize()
 
 	function DropdownModule:Open()
-		if not Dropdown.Locked then
+		if not destroyed and not Dropdown.Locked then
+			transitionGeneration += 1
+			local generation = transitionGeneration
 			Dropdown.UIElements.Menu.Visible = true
 			Dropdown.UIElements.MenuCanvas.Visible = true
 			Dropdown.UIElements.MenuCanvas.Active = true
@@ -602,7 +630,7 @@ function DropdownMenu.New(Config, Dropdown, Element, Type)
 
 			task.spawn(function()
 				task.wait(0.1)
-				if Dropdown.Locked then
+				if destroyed or Config.Window.Destroyed or generation ~= transitionGeneration or Dropdown.Locked then
 					return
 				end
 				Dropdown.Opened = true
@@ -613,6 +641,9 @@ function DropdownMenu.New(Config, Dropdown, Element, Type)
 	end
 
 	function DropdownModule:Close()
+		if destroyed then return end
+		transitionGeneration += 1
+		local generation = transitionGeneration
 		Dropdown.Opened = false
 
 		Tween(Dropdown.UIElements.Menu, 0.25, {
@@ -622,11 +653,13 @@ function DropdownMenu.New(Config, Dropdown, Element, Type)
 
 		task.spawn(function()
 			task.wait(0.1)
+			if destroyed or Config.Window.Destroyed or generation ~= transitionGeneration then return end
 			Dropdown.UIElements.Menu.Visible = false
 		end)
 
 		task.spawn(function()
 			task.wait(0.25)
+			if destroyed or Config.Window.Destroyed or generation ~= transitionGeneration then return end
 			Dropdown.UIElements.MenuCanvas.Visible = false
 			Dropdown.UIElements.MenuCanvas.Active = false
 		end)
@@ -642,7 +675,7 @@ function DropdownMenu.New(Config, Dropdown, Element, Type)
 		end
 	)
 
-	Creator.AddGlobalInputBegan(function(Input)
+	local inputHandle = Creator.AddGlobalInputBegan(function(Input)
 		if
 			Input.UserInputType == Enum.UserInputType.MouseButton1
 			or Input.UserInputType == Enum.UserInputType.Touch
@@ -675,6 +708,15 @@ function DropdownMenu.New(Config, Dropdown, Element, Type)
 			or Dropdown.DropdownFrame.UIElements.Main:GetPropertyChangedSignal("AbsolutePosition"),
 		UpdatePosition
 	)
+
+	function DropdownModule:Destroy()
+		if destroyed then return end
+		destroyed = true
+		callbackGeneration += 1
+		transitionGeneration += 1
+		inputHandle:Disconnect()
+		Dropdown.UIElements.MenuCanvas:Destroy()
+	end
 
 	return DropdownModule
 end

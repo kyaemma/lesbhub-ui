@@ -14,6 +14,7 @@ local New = Creator.New
 local Tween = Creator.Tween
 
 function SearchBar.new(TabModule, Parent, OnClose)
+	local closed, searchGeneration = false, 0
 	local SearchBarModule = {
 		IconSize = 18,
 		Padding = 14,
@@ -203,6 +204,11 @@ function SearchBar.new(TabModule, Parent, OnClose)
 		]]
 	})
 
+	Creator.AddSignal(SearchFrameContainer.Destroying, function()
+		closed = true
+		searchGeneration += 1
+	end)
+
 	local function CreateSearchTab(Title, Desc, Icon, Parent, IsParent, Callback)
 		local TabIconData = Creator.Icon(Icon)
 		local Tab = New("TextButton", {
@@ -374,7 +380,7 @@ function SearchBar.new(TabModule, Parent, OnClose)
 		end
 
 		local lowerStr = string.lower(str)
-		local lowerQuery = string.lower(query)
+		local lowerQuery = query
 
 		return string.find(lowerStr, lowerQuery, 1, true) ~= nil
 	end
@@ -384,6 +390,7 @@ function SearchBar.new(TabModule, Parent, OnClose)
 			return {}
 		end
 
+		query = string.lower(query)
 		local results = {}
 		for tabindex, tab in next, TabModule.Tabs do
 			local tabMatches = ContainsText(tab.Title or "", query)
@@ -419,47 +426,26 @@ function SearchBar.new(TabModule, Parent, OnClose)
 	end
 
 	Creator.AddSignal(ScrollingFrame.UIListLayout:GetPropertyChangedSignal("AbsoluteContentSize"), function()
-		--task.wait()
-		Tween(ScrollingFrame, 0.06, {
-			Size = UDim2.new(
-				1,
-				0,
-				0,
-				math.clamp(
-					ScrollingFrame.UIListLayout.AbsoluteContentSize.Y + (SearchBarModule.Padding * 2),
-					0,
-					SearchBarModule.MaxHeight
-				)
-			),
-		}, Enum.EasingStyle.Quint, Enum.EasingDirection.InOut):Play()
-		-- ScrollingFrame.Size = UDim2.new(
-		--     1,
-		--     0,
-		--     0,
-		--     math.clamp(ScrollingFrame.UIListLayout.AbsoluteContentSize.Y+(SearchBarModule.Padding*2), 0, SearchBarModule.MaxHeight)
-		-- )
+		if closed then return end
+		ScrollingFrame.Size = UDim2.new(1, 0, 0, math.clamp(
+			ScrollingFrame.UIListLayout.AbsoluteContentSize.Y + SearchBarModule.Padding * 2, 0, SearchBarModule.MaxHeight))
 	end)
 
 	function SearchBarModule:Open()
 		task.spawn(function()
+			if closed then return end
 			SearchFrame.Frame.Visible = true
 			SearchFrameContainer.Visible = true
 			Tween(SearchFrameContainer.UIScale, 0.12, { Scale = 1 }, Enum.EasingStyle.Quint, Enum.EasingDirection.Out):Play()
 		end)
 	end
 
-	function SearchBarModule:Close(IsDestroy)
-		task.spawn(function()
-			OnClose()
-			SearchFrame.Frame.Visible = false
-			Tween(SearchFrameContainer.UIScale, 0.12, { Scale = 1 }, Enum.EasingStyle.Quint, Enum.EasingDirection.Out):Play()
-
-			task.wait(0.12)
-			SearchFrameContainer.Visible = false
-			if IsDestroy then
-				SearchFrameContainer:Destroy()
-			end
-		end)
+	function SearchBarModule:Close()
+		if closed then return end
+		closed = true
+		searchGeneration += 1
+		OnClose()
+		SearchFrameContainer:Destroy()
 	end
 
 	Creator.AddSignal(CloseButton.TextButton.MouseButton1Click, function()
@@ -469,6 +455,7 @@ function SearchBar.new(TabModule, Parent, OnClose)
 	SearchBarModule:Open()
 
 	function SearchBarModule:Search(query)
+		if closed then return end
 		query = query or ""
 
 		local result = Search(query)
@@ -533,7 +520,15 @@ function SearchBar.new(TabModule, Parent, OnClose)
 	end
 
 	Creator.AddSignal(TextBox:GetPropertyChangedSignal("Text"), function()
-		SearchBarModule:Search(TextBox.Text)
+		searchGeneration += 1
+		local generation, query = searchGeneration, TextBox.Text
+		if query == "" then
+			SearchBarModule:Search("")
+		else
+			task.delay(0.1, function()
+				if not closed and generation == searchGeneration then SearchBarModule:Search(query) end
+			end)
+		end
 	end)
 
 	return SearchBarModule

@@ -21,6 +21,17 @@ return {
 		--Video       = require("./Video"),
 	},
 	Load = function(tbl, Container, Elements, Window, WindUI, OnElementCreateFunction, ElementsModule, UIScale, Tab)
+		local shapeGeneration, shapePending = 0, false
+		local function scheduleShapes()
+			if shapePending then return end
+			shapePending = true
+			local generation = shapeGeneration
+			task.defer(function()
+				if generation ~= shapeGeneration or Window.Destroyed then return end
+				shapePending = false
+				tbl:UpdateAllElementShapes(tbl)
+			end)
+		end
 		for name, module in next, Elements do
 			tbl[name] = function(self, config)
 				config = config or {}
@@ -124,7 +135,7 @@ return {
 						if Tab and Tab.Elements ~= tbl.Elements then
 							removeByIdentity(Tab.Elements)
 						end
-						tbl:UpdateAllElementShapes(tbl)
+						scheduleShapes()
 					end
 				end
 
@@ -135,7 +146,7 @@ return {
 				end
 
 				if Window.NewElements then
-					tbl:UpdateAllElementShapes(tbl)
+					scheduleShapes()
 				end
 
 				if OnElementCreateFunction then
@@ -145,6 +156,8 @@ return {
 			end
 		end
 		function tbl:UpdateAllElementShapes(bbb)
+			shapeGeneration += 1
+			shapePending = false
 			for i, element in next, bbb.Elements do
 				local frame
 				for key, value in pairs(element) do

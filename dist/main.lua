@@ -1,6 +1,21 @@
---[[      _      ___         ____  ______     | | /| / (_)__  ___/ / / / /  _/     | |/ |/ / / _ \/ _  / /_/ // /     |__/|__/_/_//_/\_,_/\____/___/      v1.6.66-lesbhub.1  |  2026-11-21  |  Roblox UI library for scripts. Lesbian Hub fork of Footagesus/WindUI.      To view the source code, see the `src/` folder on the official GitHub repository.      Author: Footagesus (Footages, .ftgs, oftgs)     Github: https://github.com/kyaemma/lesbhub-ui     Upstream: https://github.com/Footagesus/WindUI     Discord: https://discord.gg/ftgs-development-hub-1300692552005189632     License: MIT ]] 
+--[[
+     _      ___         ____  ______
+    | | /| / (_)__  ___/ / / / /  _/
+    | |/ |/ / / _ \/ _  / /_/ // /
+    |__/|__/_/_//_/\_,_/\____/___/
 
- type ConfigType__DARKLUA_TYPE_a={
+    v1.6.66-lesbhub.2  |  2026-11-22  |  Roblox UI library for scripts. Lesbian Hub fork of Footagesus/WindUI.
+
+    To view the source code, see the `src/` folder on the official GitHub repository.
+
+    Author: Footagesus (Footages, .ftgs, oftgs)
+    Github: https://github.com/kyaemma/lesbhub-ui
+    Upstream: https://github.com/Footagesus/WindUI
+    Discord: https://discord.gg/ftgs-development-hub-1300692552005189632
+    License: MIT
+]]
+
+type ConfigType__DARKLUA_TYPE_a={
 Object:Instance,
 Camera:Instance?,
 Interactive:boolean?,
@@ -11,7 +26,7 @@ Window:any,
 WindUI:any,
 Tab:any,
 Parent:Instance,
-}local a a={cache={}, load=function(b)if not a.cache[b]then a.cache[b]={c=a[b]()}end return a.cache[b].c end}do function a.a()
+}local a={cache={}::any}do do local function __modImpl()
 
 local b
 
@@ -233,7 +248,7 @@ end)
 return r,m
 end
 
-return d end function a.b()
+return d end function a.a():typeof(__modImpl())local b=a.cache.a if not b then b={c=__modImpl()}a.cache.a=b end return b.c end end do local function __modImpl()
 
 
 
@@ -1953,7 +1968,7 @@ return{
 ["zodiac-scorpio"]="rbxassetid://113640924054631",
 ["zodiac-taurus"]="rbxassetid://123053219704400",
 ["zodiac-virgo"]="rbxassetid://99462994613661",
-}end function a.c()
+}end function a.b():typeof(__modImpl())local b=a.cache.b if not b then b={c=__modImpl()}a.cache.b=b end return b.c end end do local function __modImpl()
 
 
 
@@ -9289,7 +9304,7 @@ return{
 ["zip-file-line-duotone"]="rbxassetid://130242676531637",
 ["zip-file-linear"]="rbxassetid://102428358345128",
 ["zip-file-outline"]="rbxassetid://134842241804608",
-}end function a.d()
+}end function a.c():typeof(__modImpl())local b=a.cache.c if not b then b={c=__modImpl()}a.cache.c=b end return b.c end end do local function __modImpl()
 
 
 
@@ -14297,7 +14312,7 @@ ImageRectSize=Vector2.new(96,96),
 Image=10,
 },
 }
-}end function a.e()
+}end function a.d():typeof(__modImpl())local b=a.cache.d if not b then b={c=__modImpl()}a.cache.d=b end return b.c end end do local function __modImpl()
 
 
 
@@ -16666,7 +16681,7 @@ ImageRectPosition=Vector2.new(0,256),
 ImageRectSize=Vector2.new(128,128),
 },
 }
-}end function a.f()
+}end function a.e():typeof(__modImpl())local b=a.cache.e if not b then b={c=__modImpl()}a.cache.e=b end return b.c end end do local function __modImpl()
 
 
 
@@ -23656,7 +23671,7 @@ return{
 "rbxassetid://119287314704938",zrButtonRoundedtopHorizontalFill=
 "rbxassetid://137388293496371",zzz=
 "rbxassetid://80729085783608",
-}end function a.g()
+}end function a.f():typeof(__modImpl())local b=a.cache.f if not b then b={c=__modImpl()}a.cache.f=b end return b.c end end do local function __modImpl()
 
 
 
@@ -24442,272 +24457,228 @@ return{
 "rbxassetid://116696831480300",
 ["xmark-shape"]="rbxassetid://113332623964226",
 ["xmark-shape-fill"]="rbxassetid://102835594333260",
-}end function a.h()
+}end function a.g():typeof(__modImpl())local b=a.cache.g if not b then b={c=__modImpl()}a.cache.g=b end return b.c end end do local function __modImpl()
 
 
 
-local b=(cloneref or clonereference or function(b)
-return b
-end)
-
-b(game:GetService"RunService")
-local d=b(game:GetService"HttpService")
-local e=b(game:GetService"ReplicatedStorage")
-
-local function IsExploit()
-return request and true or false
-end
-
-local function Get(f)
-if IsExploit()then
-return game:HttpGet(f)
-else
-local g,h=pcall(function()
-return d:GetAsync(f)
-end)
-if g then
-return h
-else
-return e:WaitForChild("Request",9999):InvokeServer{Url=f}
-end
-end
-end
-
-local function Loadstring(f)
-if not IsExploit()and e:WaitForChild("Loadstring",9999)then
-return function()
-return e:WaitForChild("Loadstring",9999):InvokeServer(f)
-end
-else
-return loadstring(f)
-end
-end
-
-local f={
+local b={
 IconsType="lucide",
 
 New=nil,
 IconThemeTag=nil,
 
 Icons={
-lucide=IsExploit()and Loadstring(
-Get"https://raw.githubusercontent.com/Footagesus/Icons/refs/heads/main/lucide/dist/Icons.lua"
-)()or a.load'b',
-solar=IsExploit()and Loadstring(
-Get"https://raw.githubusercontent.com/Footagesus/Icons/refs/heads/main/solar/dist/Icons.lua"
-)()or a.load'c',
-craft=IsExploit()and Loadstring(
-Get"https://raw.githubusercontent.com/Footagesus/Icons/refs/heads/main/craft/dist/Icons.lua"
-)()or a.load'd',
-geist=IsExploit()and Loadstring(
-Get"https://raw.githubusercontent.com/Footagesus/Icons/refs/heads/main/geist/dist/Icons.lua"
-)()or a.load'e',
-sfsymbols=IsExploit()and Loadstring(
-Get"https://raw.githubusercontent.com/Footagesus/Icons/refs/heads/main/sfsymbols/dist/Icons.lua"
-)()or a.load'f',
-gravity=IsExploit()and Loadstring(
-Get"https://raw.githubusercontent.com/Footagesus/Icons/refs/heads/main/gravity/dist/Icons.lua"
-)()or a.load'g',
+lucide=a.b(),
+solar=a.c(),
+craft=a.d(),
+geist=a.e(),
+sfsymbols=a.f(),
+gravity=a.g(),
 },
 }
 
-local function parseIconString(g)
-if type(g)=="string"then
-local h=g:find":"
-if h then
-local i=g:sub(1,h-1)
-local j=g:sub(h+1)
-return i,j
+local function parseIconString(d)
+if type(d)=="string"then
+local e=d:find":"
+if e then
+local f=d:sub(1,e-1)
+local g=d:sub(e+1)
+return f,g
 end
 end
-return nil,g
+return nil,d
 end
 
-function f.AddIcons(g,h)
-if type(g)~="string"or type(h)~="table"then
+function b.AddIcons(d,e)
+if type(d)~="string"or type(e)~="table"then
 error"AddIcons: packName must be string, iconsData must be table"
 return
 end
 
-if not f.Icons[g]then
-f.Icons[g]={
+if not b.Icons[d]then
+b.Icons[d]={
 Icons={},
 Spritesheets={},
 }
 end
 
-for i,j in pairs(h)do
-if type(j)=="number"or(type(j)=="string"and j:match"^rbxassetid://")then
-local l=j
-if type(j)=="number"then
-l="rbxassetid://"..tostring(j)
+
+
+b.Icons[d].Icons=b.Icons[d].Icons or{}
+b.Icons[d].Spritesheets=b.Icons[d].Spritesheets or{}
+
+for f,g in pairs(e)do
+if type(g)=="number"or(type(g)=="string"and g:match"^rbxassetid://")then
+local h=g
+if type(g)=="number"then
+h="rbxassetid://"..tostring(g)
 end
 
-f.Icons[g].Icons[i]={
-Image=l,
+b.Icons[d].Icons[f]={
+Image=h,
 ImageRectSize=Vector2.new(0,0),
 ImageRectPosition=Vector2.new(0,0),
 Parts=nil,
 }
-f.Icons[g].Spritesheets[l]=l
-elseif type(j)=="table"then
-if j.Image and j.ImageRectSize and j.ImageRectPosition then
-local l=j.Image
-if type(l)=="number"then
-l="rbxassetid://"..tostring(l)
+b.Icons[d].Spritesheets[h]=h
+elseif type(g)=="table"then
+if g.Image and g.ImageRectSize and g.ImageRectPosition then
+local h=g.Image
+if type(h)=="number"then
+h="rbxassetid://"..tostring(h)
 end
 
-f.Icons[g].Icons[i]={
-Image=l,
-ImageRectSize=j.ImageRectSize,
-ImageRectPosition=j.ImageRectPosition,
-Parts=j.Parts,
+b.Icons[d].Icons[f]={
+Image=h,
+ImageRectSize=g.ImageRectSize,
+ImageRectPosition=g.ImageRectPosition,
+Parts=g.Parts,
 }
 
-if not f.Icons[g].Spritesheets[l]then
-f.Icons[g].Spritesheets[l]=l
+if not b.Icons[d].Spritesheets[h]then
+b.Icons[d].Spritesheets[h]=h
 end
 else
-warn("AddIcons: Invalid spritesheet data format for icon '"..i.."'")
+warn("AddIcons: Invalid spritesheet data format for icon '"..f.."'")
 end
 else
-warn("AddIcons: Unsupported data type for icon '"..i.."': "..type(j))
+warn("AddIcons: Unsupported data type for icon '"..f.."': "..type(g))
 end
 end
 end
 
-function f.SetIconsType(g)
-f.IconsType=g
+function b.SetIconsType(d)
+b.IconsType=d
 end
 
-function f.Init(g,h)
-f.New=g
-f.IconThemeTag=h
+function b.Init(d,e)
+b.New=d
+b.IconThemeTag=e
 
-return f
+return b
 end
 
-function f.Icon(g,h,i)
-i=i~=false
-local j,l=parseIconString(g)
+function b.Icon(d,e,f)
+f=f~=false
+local g,h=parseIconString(d)
 
-local m=j or h or f.IconsType
-local p=l
+local i=g or e or b.IconsType
+local j=h
 
-local r=f.Icons[m]
+local l=b.Icons[i]
 
-if r and r.Icons and r.Icons[p]then
+if l and l.Icons and l.Icons[j]then
 return{
-r.Spritesheets[tostring(r.Icons[p].Image)],
-r.Icons[p],
+l.Spritesheets[tostring(l.Icons[j].Image)],
+l.Icons[j],
 }
-elseif r and r[p]and string.find(r[p],"rbxassetid://")then
-return i
+elseif l and l[j]and string.find(l[j],"rbxassetid://")then
+return f
 and{
-r[p],
+l[j],
 {ImageRectSize=Vector2.new(0,0),ImageRectPosition=Vector2.new(0,0)},
 }
-or r[p]
+or l[j]
 end
 return nil
 end
 
-function f.GetIcon(g,h)
-return f.Icon(g,h,false)
+function b.GetIcon(d,e)
+return b.Icon(d,e,false)
 end
 
-function f.Icon2(g,h,i)
-return f.Icon(g,h,true)
+function b.Icon2(d,e,f)
+return b.Icon(d,e,true)
 end
 
-function f.Image(g)
-local h={
-Icon=g.Icon or nil,
-Type=g.Type,
-Colors=g.Colors or{(f.IconThemeTag or Color3.new(1,1,1)),Color3.new(1,1,1)},
-Size=g.Size or UDim2.new(0,24,0,24),
+function b.Image(d)
+local e={
+Icon=d.Icon or nil,
+Type=d.Type,
+Colors=d.Colors or{(b.IconThemeTag or Color3.new(1,1,1)),Color3.new(1,1,1)},
+Size=d.Size or UDim2.new(0,24,0,24),
 
 IconFrame=nil,
 }
 
-local i={}
+local f={}
 
-for j,l in next,h.Colors do
-i[j]={
-ThemeTag=typeof(l)=="string"and l,
-Color=typeof(l)=="Color3"and l,
+for g,h in next,e.Colors do
+f[g]={
+ThemeTag=typeof(h)=="string"and h,
+Color=typeof(h)=="Color3"and h,
 }
 end
 
-local j=f.Icon2(h.Icon,h.Type)
-local l=typeof(j)=="string"and string.find(j,"rbxassetid://")
+local g=b.Icon2(e.Icon,e.Type)or{"",{ImageRectSize=Vector2.new(0,0),ImageRectPosition=Vector2.new(0,0)}}
+local h=typeof(g)=="string"and string.find(g,"rbxassetid://")
 
-if f.New then
-local m=f.New
+if b.New then
+local i=b.New
 
-local p=m("ImageLabel",{
-Size=h.Size,
+local j=i("ImageLabel",{
+Size=e.Size,
 BackgroundTransparency=1,
-ImageColor3=i[1].Color or nil,
-ThemeTag=i[1].ThemeTag and{
-ImageColor3=i[1].ThemeTag,
+ImageColor3=f[1].Color or nil,
+ThemeTag=f[1].ThemeTag and{
+ImageColor3=f[1].ThemeTag,
 },
-Image=l and j or j[1],
-ImageRectSize=l and nil or j[2].ImageRectSize,
-ImageRectOffset=l and nil or j[2].ImageRectPosition,
+Image=h and g or g[1],
+ImageRectSize=h and nil or g[2].ImageRectSize,
+ImageRectOffset=h and nil or g[2].ImageRectPosition,
 })
 
-if not l and j[2].Parts then
-for r,u in next,j[2].Parts do
-local v=f.Icon(u,h.Type)
+if not h and g[2].Parts then
+for l,m in next,g[2].Parts do
+local p=b.Icon(m,e.Type)or{"",{ImageRectSize=Vector2.new(0,0),ImageRectPosition=Vector2.new(0,0)}}
 
-m("ImageLabel",{
+i("ImageLabel",{
 Size=UDim2.new(1,0,1,0),
 BackgroundTransparency=1,
-ImageColor3=i[1+r].Color or nil,
-ThemeTag=i[1+r].ThemeTag and{
-ImageColor3=i[1+r].ThemeTag,
+ImageColor3=f[1+l].Color or nil,
+ThemeTag=f[1+l].ThemeTag and{
+ImageColor3=f[1+l].ThemeTag,
 },
-Image=v[1],
-ImageRectSize=v[2].ImageRectSize,
-ImageRectOffset=v[2].ImageRectPosition,
-Parent=p,
+Image=p[1],
+ImageRectSize=p[2].ImageRectSize,
+ImageRectOffset=p[2].ImageRectPosition,
+Parent=j,
 })
 end
 end
 
-h.IconFrame=p
+e.IconFrame=j
 else
-local m=Instance.new"ImageLabel"
-m.Size=h.Size
-m.BackgroundTransparency=1
-m.ImageColor3=i[1].Color
-m.Image=l and j or j[1]
-m.ImageRectSize=l and nil or j[2].ImageRectSize
-m.ImageRectOffset=l and nil or j[2].ImageRectPosition
+local i=Instance.new"ImageLabel"
+i.Size=e.Size
+i.BackgroundTransparency=1
+i.ImageColor3=f[1].Color
+i.Image=h and g or g[1]
+i.ImageRectSize=h and nil or g[2].ImageRectSize
+i.ImageRectOffset=h and nil or g[2].ImageRectPosition
 
-if not l and j[2].Parts then
-for p,r in next,j[2].Parts do
-local u=f.Icon(r,h.Type)
+if not h and g[2].Parts then
+for j,l in next,g[2].Parts do
+local m=b.Icon(l,e.Type)or{"",{ImageRectSize=Vector2.new(0,0),ImageRectPosition=Vector2.new(0,0)}}
 
-local v=Instance.New"ImageLabel"
-v.Size=UDim2.new(1,0,1,0)
-v.BackgroundTransparency=1
-v.ImageColor3=i[1+p].Color
-v.Image=u[1]
-v.ImageRectSize=u[2].ImageRectSize
-v.ImageRectOffset=u[2].ImageRectPosition
-v.Parent=m
+local p=Instance.New"ImageLabel"
+p.Size=UDim2.new(1,0,1,0)
+p.BackgroundTransparency=1
+p.ImageColor3=f[1+j].Color
+p.Image=m[1]
+p.ImageRectSize=m[2].ImageRectSize
+p.ImageRectOffset=m[2].ImageRectPosition
+p.Parent=i
 end
 end
 
-h.IconFrame=m
+e.IconFrame=i
 end
 
-return h
+return e
 end
 
-return f end function a.i()
+return b end function a.h():typeof(__modImpl())local b=a.cache.h if not b then b={c=__modImpl()}a.cache.h=b end return b.c end end do local function __modImpl()
 
 return function(b)
 return{
@@ -24838,7 +24809,7 @@ LabelBackgroundTransparency=0.95,
 ViewportBackground="ElementBackground",
 ViewportBackgroundTransparency="ElementBackgroundTransparency",
 }
-end end function a.j()
+end end function a.i():typeof(__modImpl())local b=a.cache.i if not b then b={c=__modImpl()}a.cache.i=b end return b.c end end do local function __modImpl()
 
 local b=(cloneref or clonereference or function(b)
 return b
@@ -24850,13 +24821,12 @@ local f=b(game:GetService"TweenService")
 local g=b(game:GetService"LocalizationService")
 local h=b(game:GetService"HttpService")
 
-local i=a.load'a'local j=
+local i=a.a()local j=
 
 d.Heartbeat
 
 
-
-local l=a.load'h'
+local l=a.h()
 
 l.SetIconsType"lucide"
 
@@ -24975,7 +24945,7 @@ ThemeChangeCallbacks={},
 function p.Init(r)
 m=r
 
-p.ThemeFallbacks=a.load'i'(p)
+p.ThemeFallbacks=a.i()(p)
 
 p.UIScale=r.UIScale
 
@@ -25146,7 +25116,8 @@ end
 
 function p.AddFontObject(r)
 p.FontObjects[r]=true
-p.UpdateFont(p.Font)
+local u=r.FontFace
+r.FontFace=Font.new(p.Font,u.Weight,u.Style)
 end
 
 function p.UpdateFont(r)
@@ -25873,45 +25844,15 @@ if isDelimiter(x[z])then
 return nil,3
 end
 
-local function calculate(C,F)
-if F==1 then
-return"Squircle"
-end
-if C==1 then
-return A and"SquircleH-TL-TR"or"Squircle-TL-TR"
-end
-if C==F then
-return A and"SquircleH-BL-BR"or"Squircle-BL-BR"
-end
+local C=isDelimiter(x[z-1])
+local F=isDelimiter(x[z+1])
+if C and F then return"Squircle"end
+if C then return A and"SquircleH-TL-TR"or"Squircle-TL-TR"end
+if F then return A and"SquircleH-BL-BR"or"Squircle-BL-BR"end
 return"Square"
 end
 
-local C=1
-local F=0
-
-for G=1,B do
-local H=x[G]
-if isDelimiter(H)then
-if z>=C and z<=G-1 then
-local J=z-C+1
-return calculate(J,F)
-end
-C=G+1
-F=0
-else
-F=F+1
-end
-end
-
-if z>=C and z<=B then
-local G=z-C+1
-return calculate(G,F)
-end
-
-return nil,4
-end
-
-return p end function a.k()
+return p end function a.j():typeof(__modImpl())local b=a.cache.j if not b then b={c=__modImpl()}a.cache.j=b end return b.c end end do local function __modImpl()
 
 local b={}
 
@@ -25936,8 +25877,8 @@ end
 
 
 
-return b end function a.l()
-local b=a.load'j'
+return b end function a.k():typeof(__modImpl())local b=a.cache.k if not b then b={c=__modImpl()}a.cache.k=b end return b.c end end do local function __modImpl()
+local b=a.j()
 local d=b.New
 local e=b.Tween
 
@@ -26293,7 +26234,7 @@ i:Destroy()
 end
 end
 
-return f end function a.m()
+return f end function a.l():typeof(__modImpl())local b=a.cache.l if not b then b={c=__modImpl()}a.cache.l=b end return b.c end end do local function __modImpl()
 
 
 
@@ -26576,7 +26517,7 @@ Copy=au,
 end
 
 
-return X end function a.n()
+return X end function a.m():typeof(__modImpl())local aa=a.cache.m if not aa then aa={c=__modImpl()}a.cache.m=aa end return aa.c end end do local function __modImpl()
 
 
 
@@ -26662,7 +26603,7 @@ Copy=CopyLink,
 }
 end
 
-return ac end function a.o()
+return ac end function a.n():typeof(__modImpl())local aa=a.cache.n if not aa then aa={c=__modImpl()}a.cache.n=aa end return aa.c end end do local function __modImpl()
 
 
 
@@ -26705,7 +26646,7 @@ Copy=CopyLink,
 }
 end
 
-return aa end function a.p()
+return aa end function a.o():typeof(__modImpl())local aa=a.cache.o if not aa then aa={c=__modImpl()}a.cache.o=aa end return aa.c end end do local function __modImpl()
 
 
 
@@ -26767,7 +26708,7 @@ Copy=copyLink
 }
 end
 
-return aa end function a.q()
+return aa end function a.p():typeof(__modImpl())local aa=a.cache.p if not aa then aa={c=__modImpl()}a.cache.p=aa end return aa.c end end do local function __modImpl()
 
 
 
@@ -26777,39 +26718,39 @@ Name="Platoboost",
 Icon="rbxassetid://75920162824531",
 Args={"ServiceId","Secret"},
 
-New=a.load'm'.New
+New=a.m().New
 },
 pandadevelopment={
 Name="Panda Development",
 Icon="panda",
 Args={"ServiceId"},
 
-New=a.load'n'.New
+New=a.n().New
 },
 luarmor={
 Name="Luarmor",
 Icon="rbxassetid://130918283130165",
 Args={"ScriptId","Discord"},
 
-New=a.load'o'.New
+New=a.o().New
 },
 junkiedevelopment={
 Name="Junkie Development",
 Icon="rbxassetid://106310347705078",
 Args={"ServiceId","ApiKey","Provider"},
 
-New=a.load'p'.New
+New=a.p().New
 },
 
 
-}end function a.r()
+}end function a.q():typeof(__modImpl())local aa=a.cache.q if not aa then aa={c=__modImpl()}a.cache.q=aa end return aa.c end end do local function __modImpl()
 
 
 
 return[[
 {
     "name": "windui",
-    "version": "1.6.66-lesbhub.1",
+    "version": "1.6.66-lesbhub.2",
     "main": "./dist/main.lua",
     "repository": "https://github.com/kyaemma/lesbhub-ui",
     "discord": "https://discord.gg/ftgs-development-hub-1300692552005189632",
@@ -26837,11 +26778,11 @@ return[[
         "concurrently": "^9.2.0"
     }
 }
-]]end function a.s()
+]]end function a.r():typeof(__modImpl())local aa=a.cache.r if not aa then aa={c=__modImpl()}a.cache.r=aa end return aa.c end end do local function __modImpl()
 
 local aa={}
 
-local ab=a.load'j'
+local ab=a.j()
 local ac=ab.New
 local ad=ab.Tween
 
@@ -26985,11 +26926,11 @@ end)
 return ap
 end
 
-return aa end function a.t()
+return aa end function a.s():typeof(__modImpl())local aa=a.cache.s if not aa then aa={c=__modImpl()}a.cache.s=aa end return aa.c end end do local function __modImpl()
 
 local aa={}
 
-local ab=a.load'j'
+local ab=a.j()
 local ac=ab.New local ad=
 ab.Tween
 
@@ -27111,9 +27052,9 @@ end
 return as
 end
 
-return aa end function a.u()
+return aa end function a.t():typeof(__modImpl())local aa=a.cache.t if not aa then aa={c=__modImpl()}a.cache.t=aa end return aa.c end end do local function __modImpl()
 
-local aa=a.load'j'
+local aa=a.j()
 local ab=aa.New
 local ac=aa.Tween
 
@@ -27292,19 +27233,19 @@ end
 return aj
 end
 
-return ad end function a.v()
+return ad end function a.u():typeof(__modImpl())local aa=a.cache.u if not aa then aa={c=__modImpl()}a.cache.u=aa end return aa.c end end do local function __modImpl()
 
 local aa={}
 
-local ab=a.load'j'
+local ab=a.j()
 local ac=ab.New
 local ad=ab.Tween
 
-local ae=a.load's'.New
-local af=a.load't'.New
+local ae=a.s().New
+local af=a.t().New
 
 function aa.new(ag,ah,ai,aj)
-local ak=a.load'u'
+local ak=a.u()
 local al=ak.Create(true,"Popup",ag.Window,ag.WindUI,ag.WindUI.ScreenGui.KeySystem)
 
 local am={}
@@ -27800,7 +27741,7 @@ aA.Position=UDim2.new(1,0,0.5,0)
 al:Open()
 end
 
-return aa end function a.w()
+return aa end function a.v():typeof(__modImpl())local aa=a.cache.v if not aa then aa={c=__modImpl()}a.cache.v=aa end return aa.c end end do local function __modImpl()
 
 
 
@@ -27822,18 +27763,18 @@ local ab=aa(game:GetService"Workspace").CurrentCamera.ViewportSize.Y
 return map(ab,0,2560,8,56)
 end
 
-return{viewportPointToWorld,getOffset}end function a.x()
+return{viewportPointToWorld,getOffset}end function a.w():typeof(__modImpl())local aa=a.cache.w if not aa then aa={c=__modImpl()}a.cache.w=aa end return aa.c end end do local function __modImpl()
 
 
 
 local aa=(cloneref or clonereference or function(aa)return aa end)
 
 
-local ab=a.load'j'
+local ab=a.j()
 local ac=ab.New
 
 
-local ad,ae=unpack(a.load'w')
+local ad,ae=unpack(a.w())
 local af=Instance.new("Folder",aa(game:GetService"Workspace").CurrentCamera)
 
 
@@ -27969,11 +27910,11 @@ ah.Frame=ak
 ah.Model=aj
 
 return ah
-end end function a.y()
+end end function a.x():typeof(__modImpl())local aa=a.cache.x if not aa then aa={c=__modImpl()}a.cache.x=aa end return aa.c end end do local function __modImpl()
 
 
-local aa=a.load'j'
-local ab=a.load'x'
+local aa=a.j()
+local ab=a.x()
 
 local ac=aa.New
 
@@ -28093,7 +28034,7 @@ ae.SetVisibility=af.SetVisibility
 end
 
 return ae,af
-end end function a.z()
+end end function a.y():typeof(__modImpl())local aa=a.cache.y if not aa then aa={c=__modImpl()}a.cache.y=aa end return aa.c end end do local function __modImpl()
 
 
 
@@ -28101,9 +28042,9 @@ local aa=(cloneref or clonereference or function(aa)return aa end)
 
 
 local ab={
-AcrylicBlur=a.load'x',
+AcrylicBlur=a.x(),
 
-AcrylicPaint=a.load'y',
+AcrylicPaint=a.y(),
 }
 
 function ab.init()
@@ -28150,11 +28091,11 @@ registerDefaults()
 ab.Enable()
 end
 
-return ab end function a.A()
+return ab end function a.z():typeof(__modImpl())local aa=a.cache.z if not aa then aa={c=__modImpl()}a.cache.z=aa end return aa.c end end do local function __modImpl()
 
 local aa={}
 
-local ab=a.load'j'
+local ab=a.j()
 local ac=ab.New local ad=
 ab.Tween
 
@@ -28171,7 +28112,7 @@ Buttons=ae.Buttons,
 IconSize=22,
 }
 
-local ah=a.load'u'
+local ah=a.u()
 local ai=ah.Create(true,"Popup",ae.WindUI.Window,ae.WindUI,af)
 
 local aj=200
@@ -28332,7 +28273,7 @@ PaddingBottom=UDim.new(0,16),
 }),
 })
 
-local as=a.load's'.New
+local as=a.s().New
 
 for at,au in next,ag.Buttons do
 as(au.Title,au.Icon,au.Callback,au.Variant,aq,ai)
@@ -28344,7 +28285,7 @@ ai:Open()
 return ag
 end
 
-return aa end function a.B()
+return aa end function a.A():typeof(__modImpl())local aa=a.cache.A if not aa then aa={c=__modImpl()}a.cache.A=aa end return aa.c end end do local function __modImpl()
 return function(aa,ab)
 return{
 Dark={
@@ -28724,11 +28665,11 @@ Button=aa:Gradient({
 Icon=Color3.fromHex"#ffffff",
 },
 }
-end end function a.C()
+end end function a.B():typeof(__modImpl())local aa=a.cache.B if not aa then aa={c=__modImpl()}a.cache.B=aa end return aa.c end end do local function __modImpl()
 
 local aa={}
 
-local ab=a.load'j'
+local ab=a.j()
 local ac=ab.New local ad=
 ab.Tween
 
@@ -28816,7 +28757,7 @@ an,
 return ao
 end
 
-return aa end function a.D()
+return aa end function a.C():typeof(__modImpl())local aa=a.cache.C if not aa then aa={c=__modImpl()}a.cache.C=aa end return aa.c end end do local function __modImpl()
 
 local aa={}
 
@@ -28825,7 +28766,7 @@ return ab
 end
 local ac=ab(game:GetService"UserInputService")
 
-local ad=a.load'j'
+local ad=a.j()
 local ae=ad.New
 
 function aa.New(af,ag,ah,ai,aj)
@@ -28965,11 +28906,11 @@ UpdateVisuals()
 return ak
 end
 
-return aa end function a.E()
+return aa end function a.D():typeof(__modImpl())local aa=a.cache.D if not aa then aa={c=__modImpl()}a.cache.D=aa end return aa.c end end do local function __modImpl()
 
 local aa={}
 
-local ab=a.load'j'
+local ab=a.j()
 local ac=ab.New
 local ad=ab.Tween
 
@@ -29134,7 +29075,7 @@ end)
 return ah
 end
 
-return aa end function a.F()
+return aa end function a.E():typeof(__modImpl())local aa=a.cache.E if not aa then aa={c=__modImpl()}a.cache.E=aa end return aa.c end end do local function __modImpl()
 
 local aa=(cloneref or clonereference or function(aa)return aa end)
 
@@ -29515,10 +29456,10 @@ function ae.GetConfig(af,ag)
 return ae.Configs[ag]
 end
 
-return ae end function a.G()
+return ae end function a.F():typeof(__modImpl())local aa=a.cache.F if not aa then aa={c=__modImpl()}a.cache.F=aa end return aa.c end end do local function __modImpl()
 local aa={}
 
-local ab=a.load'j'
+local ab=a.j()
 local ac=ab.New
 local ad=ab.Tween
 
@@ -29801,10 +29742,10 @@ end
 
 
 
-return aa end function a.H()
+return aa end function a.G():typeof(__modImpl())local aa=a.cache.G if not aa then aa={c=__modImpl()}a.cache.G=aa end return aa.c end end do local function __modImpl()
 local aa={}
 
-local ab=a.load'j'
+local ab=a.j()
 local ac=ab.New
 local ad=ab.Tween
 
@@ -29963,9 +29904,9 @@ end
 
 
 
-return aa end function a.I()
+return aa end function a.H():typeof(__modImpl())local aa=a.cache.H if not aa then aa={c=__modImpl()}a.cache.H=aa end return aa.c end end do local function __modImpl()
 game:GetService"ReplicatedStorage"
-local aa=a.load'j'
+local aa=a.j()
 local ab=aa.New
 local ac=aa.NewRoundFrame
 local ad=aa.Tween
@@ -29976,7 +29917,7 @@ end)
 
 ae(game:GetService"UserInputService")
 
-local af=a.load'E'
+local af=a.E()
 
 local function Color3ToHSB(ag)
 local ah,ai,aj=ag.R,ag.G,ag.B
@@ -30423,12 +30364,14 @@ if am then
 
 ad(aB,0.12,{ImageTransparency=0.9}):Play()
 ad(aA,0.12,{ImageTransparency=0.8}):Play()
-aa.AddSignal(d.MouseMoved,function(g,h)
-aB.HoverGradient.Offset=
-Vector2.new(((g-d.AbsolutePosition.X)/d.AbsoluteSize.X)-0.5,0)
-aA.HoverGradient.Offset=
-Vector2.new(((g-d.AbsolutePosition.X)/d.AbsoluteSize.X)-0.5,0)
+
+end
 end)
+aa.AddSignal(d.MouseMoved,function(g)
+if am and d.AbsoluteSize.X>0 then
+local h=Vector2.new(((g-d.AbsolutePosition.X)/d.AbsoluteSize.X)-0.5,0)
+aB.HoverGradient.Offset=h
+aA.HoverGradient.Offset=h
 end
 end)
 aa.AddSignal(d.InputEnded,function()
@@ -30680,14 +30623,14 @@ end
 
 
 return ah
-end end function a.J()
+end end function a.I():typeof(__modImpl())local aa=a.cache.I if not aa then aa={c=__modImpl()}a.cache.I=aa end return aa.c end end do local function __modImpl()
 
-local aa=a.load'j'
+local aa=a.j()
 local ab=aa.New
 
 local ac={}
 
-local ad=a.load's'.New
+local ad=a.s().New
 
 function ac.New(ae,af)
 af.Hover=false
@@ -30702,7 +30645,7 @@ Desc=af.Desc or nil,
 
 Locked=af.Locked or false,
 }
-local ah=a.load'I'(af)
+local ah=a.I()(af)
 
 ag.ParagraphFrame=ah
 if af.Buttons and#af.Buttons>0 then
@@ -30750,9 +30693,9 @@ end
 return ag.__type,ag
 end
 
-return ac end function a.K()
+return ac end function a.J():typeof(__modImpl())local aa=a.cache.J if not aa then aa={c=__modImpl()}a.cache.J=aa end return aa.c end end do local function __modImpl()
 
-local aa=a.load'j'local ab=
+local aa=a.j()local ab=
 aa.New
 
 local ac={}
@@ -30776,7 +30719,7 @@ UIElements={},
 
 local ag=true
 
-af.ButtonFrame=a.load'I'{
+af.ButtonFrame=a.I(){
 Title=af.Title,
 Desc=af.Desc,
 Parent=ae.Parent,
@@ -30859,11 +30802,11 @@ end)
 return af.__type,af
 end
 
-return ac end function a.L()
+return ac end function a.K():typeof(__modImpl())local aa=a.cache.K if not aa then aa={c=__modImpl()}a.cache.K=aa end return aa.c end end do local function __modImpl()
 
 local aa={}
 
-local ab=a.load'j'
+local ab=a.j()
 local ac=ab.New
 local ad=ab.Tween
 
@@ -31268,11 +31211,11 @@ end
 return aq,am
 end
 
-return aa end function a.M()
+return aa end function a.L():typeof(__modImpl())local aa=a.cache.L if not aa then aa={c=__modImpl()}a.cache.L=aa end return aa.c end end do local function __modImpl()
 
 local aa={}
 
-local ab=a.load'j'local ac=
+local ab=a.j()local ac=
 ab.New
 local ad=ab.Tween
 
@@ -31369,13 +31312,13 @@ return an,ak
 end
 
 
-return aa end function a.N()
-local aa=a.load'j'local ab=
+return aa end function a.M():typeof(__modImpl())local aa=a.cache.M if not aa then aa={c=__modImpl()}a.cache.M=aa end return aa.c end end do local function __modImpl()
+local aa=a.j()local ab=
 aa.New local ac=
 aa.Tween
 
-local ad=a.load'L'.New
-local ae=a.load'M'.New
+local ad=a.L().New
+local ae=a.M().New
 
 local af={}
 
@@ -31393,7 +31336,7 @@ Type=ah.Type or"Toggle",
 Callback=ah.Callback or function()end,
 UIElements={},
 }
-ai.ToggleFrame=a.load'I'{
+ai.ToggleFrame=a.I(){
 Title=ai.Title,
 Desc=ai.Desc,
 
@@ -31512,7 +31455,7 @@ end
 return ai.__type,ai
 end
 
-return af end function a.O()
+return af end function a.N():typeof(__modImpl())local aa=a.cache.N if not aa then aa={c=__modImpl()}a.cache.N=aa end return aa.c end end do local function __modImpl()
 
 local aa=(cloneref or clonereference or function(aa)
 return aa
@@ -31521,7 +31464,7 @@ end)
 local ac=aa(game:GetService"UserInputService")
 local ad=aa(game:GetService"RunService")
 
-local ae=a.load'j'
+local ae=a.j()
 local af=ae.New
 local ag=ae.Tween
 
@@ -31620,7 +31563,7 @@ av.Size=UDim2.new(0,al.IconSize,0,al.IconSize)
 aw=aw+al.IconSize-2
 end
 end
-al.SliderFrame=a.load'I'{
+al.SliderFrame=a.I(){
 Title=al.Title,
 Desc=al.Desc,
 Parent=ak.Parent,
@@ -31714,7 +31657,7 @@ Visible=al.IsTextbox,
 
 local ax
 if al.IsTooltip then
-ax=a.load'H'.New(
+ax=a.H().New(
 ap,
 al.UIElements.SliderIcon.Frame.Thumb,
 true,
@@ -31937,9 +31880,9 @@ end)
 return al.__type,al
 end
 
-return ah end function a.P()
+return ah end function a.O():typeof(__modImpl())local aa=a.cache.O if not aa then aa={c=__modImpl()}a.cache.O=aa end return aa.c end end do local function __modImpl()
 
-local aa=a.load'j'
+local aa=a.j()
 local ac=aa.New
 local ad=aa.Tween
 
@@ -32043,7 +31986,7 @@ end
 return tostring(math.floor(ar+0.5)).."%"
 end
 
-ao.ProgressBarFrame=a.load'I'{
+ao.ProgressBarFrame=a.I(){
 Title=ao.Title,
 Desc=ao.Desc,
 Parent=ag.Parent,
@@ -32216,7 +32159,7 @@ Update(ao.Value.Default,true)
 return ao.__type,ao
 end
 
-return ae end function a.Q()
+return ae end function a.P():typeof(__modImpl())local aa=a.cache.P if not aa then aa={c=__modImpl()}a.cache.P=aa end return aa.c end end do local function __modImpl()
 
 local aa=(cloneref or clonereference or function(aa)
 return aa
@@ -32224,7 +32167,7 @@ end)
 
 local ac=aa(game:GetService"UserInputService")
 
-local ad=a.load'j'
+local ad=a.j()
 local ae=ad.New local af=
 ad.Tween
 
@@ -32233,7 +32176,7 @@ UICorner=6,
 UIPadding=8,
 }
 
-local ah=a.load'C'.New
+local ah=a.C().New
 
 function ag.New(ai,aj)
 local function NormalizeKeyCode(ak)
@@ -32292,7 +32235,7 @@ am[CanonicalInput"Escape"]=true
 
 local an=true
 
-al.KeybindFrame=a.load'I'{
+al.KeybindFrame=a.I(){
 Title=al.Title,
 Desc=al.Desc,
 Parent=aj.Parent,
@@ -32333,71 +32276,78 @@ UDim2.new(0,24+al.UIElements.Keybind.Frame.Frame.TextLabel.TextBounds.X,0,42)
 end
 )
 
-function al.Lock(ao)
+local ao
+function al.Lock(ap)
+if ao and al.Picking then ao()end
 al.Locked=true
 an=false
 return al.KeybindFrame:Lock(al.LockedTitle)
 end
-function al.Unlock(ao)
+function al.Unlock(ap)
 al.Locked=false
 an=true
 return al.KeybindFrame:Unlock()
 end
 
-function al.Set(ao,ap)
-local aq=CanonicalInput(ap)
-al.Value=aq
-al.UIElements.Keybind.Frame.Frame.TextLabel.Text=aq
+function al.Set(ap,aq)
+if ao and al.Picking then ao()end
+local ar=CanonicalInput(aq)
+al.Value=ar
+al.UIElements.Keybind.Frame.Frame.TextLabel.Text=ar
 end
 
 if al.Locked then
 al:Lock()
 end
 
-local ao
+local ap={}
+local aq=false
+ao=function()
+for ar,as in ipairs(ap)do as:Disconnect()end
+table.clear(ap)
+al.Picking=false
+if not aq then al.UIElements.Keybind.Frame.Frame.TextLabel.Text=al.Value end
+end
+local function capture(ar,as)
+table.insert(ap,ad.AddSignal(ar,as))
+end
 
 ad.AddSignal(al.KeybindFrame.UIElements.Main.MouseButton1Click,function()
-if an then
-if al.CanChange then
+if not an or al.Picking or aq or not al.CanChange then return end
 al.Picking=true
 al.UIElements.Keybind.Frame.Frame.TextLabel.Text="..."
-
-
-
-local ap
-ap=ad.AddSignal(ac.InputBegan,function(aq)
-local ar=InputName(aq)
-if not ar or am[ar]then
-return
-end
-
-if ao then
-ao:Disconnect()
-ao=nil
-ad.CompactSignals()
-end
-
-ao=ad.AddSignal(ac.InputEnded,function(as)
-if ar and InputName(as)==ar then
-al.Picking=false
-
-al.UIElements.Keybind.Frame.Frame.TextLabel.Text=ar
-al.Value=ar
-
-ap:Disconnect()
-ao:Disconnect()
-ap=nil
-ao=nil
-ad.CompactSignals()
-end
+local ar
+capture(ac.WindowFocusReleased,ao)
+local as=al.KeybindFrame.UIElements.Main
+while as do
+local at=as
+if at:IsA"GuiObject"then
+capture(at:GetPropertyChangedSignal"Visible",function()
+if not at.Visible then ao()end
 end)
+elseif at:IsA"ScreenGui"then
+capture(at:GetPropertyChangedSignal"Enabled",function()
+if not at.Enabled then ao()end
 end)
 end
+as=as.Parent
 end
+capture(al.KeybindFrame.UIElements.Main.Destroying,ao)
+capture(ac.InputBegan,function(at)
+local au=InputName(at)
+if au=="Escape"then ao();return end
+if not ar and au and not am[au]then ar=au end
+end)
+capture(ac.InputEnded,function(at)
+if not ar or InputName(at)~=ar then return end
+local au=ar
+ao()
+if not aq then al:Set(au)end
+end)
 end)
 
-ad.AddGlobalInputBegan(function(ap,aq,ar)
-if ar then
+local ar=ad.AddGlobalInputBegan(function(ar,as,at)
+if at then
 return
 end
 if not an then
@@ -32407,28 +32357,36 @@ if al.Picking then
 return
 end
 
-local as=InputName(ap)
-if as and as==CanonicalInput(al.Value)then
-ad.SafeCallback(al.Callback,as)
+local au=InputName(ar)
+if au and au==CanonicalInput(al.Value)then
+ad.SafeCallback(al.Callback,au)
 end
 end)
+
+function al.Destroy(as)
+if aq then return end
+ao()
+aq=true
+ar:Disconnect()
+al.KeybindFrame:Destroy()
+end
 
 return al.__type,al
 end
 
-return ag end function a.R()
+return ag end function a.Q():typeof(__modImpl())local aa=a.cache.Q if not aa then aa={c=__modImpl()}a.cache.Q=aa end return aa.c end end do local function __modImpl()
 
-local aa=a.load'j'local ac=
+local aa=a.j()local ac=
 aa.New local ad=
 aa.Tween
 
 local ae={
 UICorner=8,
 UIPadding=8,
-}local af=a.load's'
+}local af=a.s()
 
 .New
-local ag=a.load't'.New
+local ag=a.t().New
 
 function ae.New(ah,ai)
 local aj={
@@ -32450,7 +32408,7 @@ Width=150,
 
 local ak=true
 
-aj.InputFrame=a.load'I'{
+aj.InputFrame=a.I(){
 Title=aj.Title,
 Desc=aj.Desc,
 Parent=ai.Parent,
@@ -32526,9 +32484,9 @@ end
 return aj.__type,aj
 end
 
-return ae end function a.S()
+return ae end function a.R():typeof(__modImpl())local aa=a.cache.R if not aa then aa={c=__modImpl()}a.cache.R=aa end return aa.c end end do local function __modImpl()
 
-local aa=a.load'j'
+local aa=a.j()
 local ae=aa.New
 
 local af={}
@@ -32554,7 +32512,7 @@ ai
 return"Divider",{__type="Divider",ElementFrame=aj}
 end
 
-return af end function a.T()
+return af end function a.S():typeof(__modImpl())local aa=a.cache.S if not aa then aa={c=__modImpl()}a.cache.S=aa end return aa.c end end do local function __modImpl()
 local aa={}
 
 local ae=(cloneref or clonereference or function(ae)
@@ -32567,9 +32525,9 @@ local ag=ae(game:GetService"Workspace").CurrentCamera local ah=
 
 workspace.CurrentCamera
 
-local ai=a.load't'.New
+local ai=a.t().New
 
-local aj=a.load'j'
+local aj=a.j()
 local ak=aj.New
 local al=aj.Tween
 
@@ -32577,6 +32535,7 @@ local am=0.67
 
 function aa.New(an,ao,ap,aq)
 local ar={}
+local as,at,au=false,0,0
 
 if not ao.Callback then
 aq="Menu"
@@ -32655,228 +32614,228 @@ UDim2.fromOffset(0,ao.UIElements.UIListLayout.AbsoluteContentSize.Y)
 end
 
 local function RecalculateListSize()
-local as=an.WindUI.DropdownGui.AbsoluteSize.Y
+local av=an.WindUI.DropdownGui.AbsoluteSize.Y
 
-local at=ao.UIElements.UIListLayout.AbsoluteContentSize.Y/an.UIScale
-local au=ao.SearchBarEnabled and(ap.SearchBarHeight+(ap.MenuPadding*3))
+local aw=ao.UIElements.UIListLayout.AbsoluteContentSize.Y/an.UIScale
+local ax=ao.SearchBarEnabled and(ap.SearchBarHeight+(ap.MenuPadding*3))
 or(ap.MenuPadding*2)
-local av=at+au
+local ay=aw+ax
 
-if av>as then
-ao.UIElements.MenuCanvas.Size=
-UDim2.fromOffset(ao.UIElements.MenuCanvas.AbsoluteSize.X,as)
-else
+if ay>av then
 ao.UIElements.MenuCanvas.Size=
 UDim2.fromOffset(ao.UIElements.MenuCanvas.AbsoluteSize.X,av)
+else
+ao.UIElements.MenuCanvas.Size=
+UDim2.fromOffset(ao.UIElements.MenuCanvas.AbsoluteSize.X,ay)
 end
 end
 
-function UpdatePosition()
-local as=ao.UIElements.Dropdown or ao.DropdownFrame.UIElements.Main
-local at=ao.UIElements.MenuCanvas
+aj.AddSignal(ao.UIElements.UIListLayout:GetPropertyChangedSignal"AbsoluteContentSize",function()
+if as or an.Window.Destroyed then return end
+RecalculateCanvasSize()
+RecalculateListSize()
+end)
 
-local au=ag.ViewportSize.Y
--(as.AbsolutePosition.Y+as.AbsoluteSize.Y)
+local function UpdatePosition()
+local av=ao.UIElements.Dropdown or ao.DropdownFrame.UIElements.Main
+local aw=ao.UIElements.MenuCanvas
+
+local ax=ag.ViewportSize.Y
+-(av.AbsolutePosition.Y+av.AbsoluteSize.Y)
 -ap.MenuPadding
 -54
-local av=at.AbsoluteSize.Y+ap.MenuPadding
+local ay=aw.AbsoluteSize.Y+ap.MenuPadding
 
-local aw=-54
-if au<av then
-aw=av-au-54
+local az=-54
+if ax<ay then
+az=ay-ax-54
 end
 
-at.Position=UDim2.new(
+aw.Position=UDim2.new(
 0,
-as.AbsolutePosition.X+as.AbsoluteSize.X,
+av.AbsolutePosition.X+av.AbsoluteSize.X,
 0,
-as.AbsolutePosition.Y+as.AbsoluteSize.Y-aw+(ap.MenuPadding*2)
+av.AbsolutePosition.Y+av.AbsoluteSize.Y-az+(ap.MenuPadding*2)
 )
 end
 
-local as
+local av
 
-function ar.Display(at)
-local au=ao.Values
-local av=""
+function ar.Display(aw)
+local ax=ao.Values
+local ay=""
 
 if ao.Multi then
-local aw={}
+local az={}
 if typeof(ao.Value)=="table"then
-for ax,ay in ipairs(ao.Value)do
-local az=typeof(ay)=="table"and ay.Title or ay
-aw[az]=true
+for aA,aB in ipairs(ao.Value)do
+local b=typeof(aB)=="table"and aB.Title or aB
+az[b]=true
 end
 end
 
-for ax,ay in ipairs(au)do
-local az=typeof(ay)=="table"and ay.Title or ay
-if aw[az]then
-av=av..az..", "
+for aA,aB in ipairs(ax)do
+local b=typeof(aB)=="table"and aB.Title or aB
+if az[b]then
+ay=ay..b..", "
 end
 end
 
-if#av>0 then
-av=av:sub(1,#av-2)
+if#ay>0 then
+ay=ay:sub(1,#ay-2)
 end
 else
-av=typeof(ao.Value)=="table"and(ao.Value.Title or ao.Value[1])
+ay=typeof(ao.Value)=="table"and(ao.Value.Title or ao.Value[1])
 or ao.Value
 or""
 end
 
 if ao.UIElements.Dropdown then
-ao.UIElements.Dropdown.Frame.Frame.TextLabel.Text=(av==""and"--"or av)
+ao.UIElements.Dropdown.Frame.Frame.TextLabel.Text=(ay==""and"--"or ay)
 end
 end
 
-local function Callback(at)
+local function Callback(aw,ax)
+at+=1
+local ay=at
 ar:Display()
-if ao.Locked then
-return
-end
-
-if ao.Callback then
+if ax or ao.Locked or as then return end
+local az=ao.Callback or aw
+local aA=ao.Value
+if ao.Multi and typeof(aA)=="table"then aA=table.clone(aA)end
+if az then
 task.spawn(function()
-if ao.Locked then
-return
-end
-aj.SafeCallback(ao.Callback,ao.Value)
-end)
-else
-task.spawn(function()
-if ao.Locked then
-return
-end
-aj.SafeCallback(at)
+if as or an.Window.Destroyed or ao.Locked or ay~=at then return end
+aj.SafeCallback(az,aA)
 end)
 end
 end
 
-function ar.LockValues(at,au)
-if not au then
+function ar.LockValues(aw,ax)
+if not ax then
 return
 end
 
-for av,aw in next,ao.Tabs do
-if aw and aw.UIElements and aw.UIElements.TabItem then
-local ax=aw.Name
-local ay=false
+for ay,az in next,ao.Tabs do
+if az and az.UIElements and az.UIElements.TabItem then
+local aA=az.Name
+local aB=false
 
-for az,aA in next,au do
-if ax==aA then
-ay=true
+for b,d in next,ax do
+if aA==d then
+aB=true
 break
 end
 end
 
-if ay then
-al(aw.UIElements.TabItem,0.1,{ImageTransparency=1}):Play()
+if aB then
+al(az.UIElements.TabItem,0.1,{ImageTransparency=1}):Play()
 
-al(aw.UIElements.TabItem.Frame.Title.TextLabel,0.1,{TextTransparency=0.6}):Play()
-if aw.UIElements.TabIcon then
-al(aw.UIElements.TabIcon.ImageLabel,0.1,{ImageTransparency=0.6}):Play()
+al(az.UIElements.TabItem.Frame.Title.TextLabel,0.1,{TextTransparency=0.6}):Play()
+if az.UIElements.TabIcon then
+al(az.UIElements.TabIcon.ImageLabel,0.1,{ImageTransparency=0.6}):Play()
 end
 
-aw.UIElements.TabItem.Active=false
-aw.Locked=true
+az.UIElements.TabItem.Active=false
+az.Locked=true
 else
-if aw.Selected then
-al(aw.UIElements.TabItem,0.1,{ImageTransparency=am}):Play()
+if az.Selected then
+al(az.UIElements.TabItem,0.1,{ImageTransparency=am}):Play()
 
-al(aw.UIElements.TabItem.Frame.Title.TextLabel,0.1,{TextTransparency=0}):Play()
-if aw.UIElements.TabIcon then
-al(aw.UIElements.TabIcon.ImageLabel,0.1,{ImageTransparency=0}):Play()
+al(az.UIElements.TabItem.Frame.Title.TextLabel,0.1,{TextTransparency=0}):Play()
+if az.UIElements.TabIcon then
+al(az.UIElements.TabIcon.ImageLabel,0.1,{ImageTransparency=0}):Play()
 end
 else
-al(aw.UIElements.TabItem,0.1,{ImageTransparency=1}):Play()
+al(az.UIElements.TabItem,0.1,{ImageTransparency=1}):Play()
 
 al(
-aw.UIElements.TabItem.Frame.Title.TextLabel,
+az.UIElements.TabItem.Frame.Title.TextLabel,
 0.1,
 {TextTransparency=aq=="Dropdown"and 0.4 or 0.05}
 ):Play()
-if aw.UIElements.TabIcon then
+if az.UIElements.TabIcon then
 al(
-aw.UIElements.TabIcon.ImageLabel,
+az.UIElements.TabIcon.ImageLabel,
 0.1,
 {ImageTransparency=aq=="Dropdown"and 0.2 or 0}
 ):Play()
 end
 end
 
-aw.UIElements.TabItem.Active=true
-aw.Locked=false
+az.UIElements.TabItem.Active=true
+az.Locked=false
 end
 end
 end
 end
 
-function ar.Refresh(at,au)
-if an.Window.Destroyed then
+function ar.Refresh(aw,ax,ay)
+if as or an.Window.Destroyed then
 return
 end
 
-for av,aw in next,ao.UIElements.Menu.Frame.ScrollingFrame:GetChildren()do
-if not aw:IsA"UIListLayout"then
-aw:Destroy()
+for az,aA in next,ao.UIElements.Menu.Frame.ScrollingFrame:GetChildren()do
+if not aA:IsA"UIListLayout"then
+aA:Destroy()
 end
 end
 
 ao.Tabs={}
+ao.Values=ax
 
 if ao.SearchBarEnabled then
-if not as then
-as=ai("Search...","search",ao.UIElements.Menu,nil,function(av)
-for aw,ax in next,ao.Tabs do
-if string.find(string.lower(ax.Name),string.lower(av),1,true)then
-ax.UIElements.TabItem.Visible=true
+if not av then
+av=ai("Search...","search",ao.UIElements.Menu,nil,function(az)
+for aA,aB in next,ao.Tabs do
+if string.find(string.lower(aB.Name),string.lower(az),1,true)then
+aB.UIElements.TabItem.Visible=true
 else
-ax.UIElements.TabItem.Visible=false
+aB.UIElements.TabItem.Visible=false
+end
 end
 RecalculateListSize()
 RecalculateCanvasSize()
-end
 end,true)
-as.Size=UDim2.new(1,0,0,ap.SearchBarHeight)
-as.Position=UDim2.new(0,0,0,0)
-as.Name="SearchBar"
+av.Size=UDim2.new(1,0,0,ap.SearchBarHeight)
+av.Position=UDim2.new(0,0,0,0)
+av.Name="SearchBar"
 end
 end
 
-for av,aw in next,au do
-if aw.Type~="Divider"then
-local ax={
-Name=typeof(aw)=="table"and aw.Title or aw,
-Desc=typeof(aw)=="table"and aw.Desc or nil,
-Icon=typeof(aw)=="table"and aw.Icon or nil,
-IconSize=typeof(aw)=="table"and aw.IconSize or nil,
-Original=aw,
+for az,aA in next,ax do
+if aA.Type~="Divider"then
+local aB={
+Name=typeof(aA)=="table"and aA.Title or aA,
+Desc=typeof(aA)=="table"and aA.Desc or nil,
+Icon=typeof(aA)=="table"and aA.Icon or nil,
+IconSize=typeof(aA)=="table"and aA.IconSize or nil,
+Original=aA,
 Selected=false,
-Locked=typeof(aw)=="table"and aw.Locked or false,
+Locked=typeof(aA)=="table"and aA.Locked or false,
 UIElements={},
 }
-local ay
-if ax.Icon then
-ay=aj.Image(ax.Icon,ax.Icon,0,an.Window.Folder,"Dropdown",true)
-ay.Size=
-UDim2.new(0,ax.IconSize or ap.TabIcon,0,ax.IconSize or ap.TabIcon)
-ay.ImageLabel.ImageTransparency=aq=="Dropdown"and 0.2 or 0
-ax.UIElements.TabIcon=ay
+local b
+if aB.Icon then
+b=aj.Image(aB.Icon,aB.Icon,0,an.Window.Folder,"Dropdown",true)
+b.Size=
+UDim2.new(0,aB.IconSize or ap.TabIcon,0,aB.IconSize or ap.TabIcon)
+b.ImageLabel.ImageTransparency=aq=="Dropdown"and 0.2 or 0
+aB.UIElements.TabIcon=b
 end
-ax.UIElements.TabItem=aj.NewRoundFrame(
+aB.UIElements.TabItem=aj.NewRoundFrame(
 ap.MenuCorner-ap.MenuPadding,
 "Squircle",
 {
 Size=UDim2.new(1,0,0,36),
-AutomaticSize=ax.Desc and"Y",
+AutomaticSize=aB.Desc and"Y",
 ImageTransparency=1,
 Parent=ao.UIElements.Menu.Frame.ScrollingFrame,
 
 ThemeTag={
 ImageColor3="DropdownTabBackground",
 },
-Active=not ax.Locked,
+Active=not aB.Locked,
 },
 {
 aj.NewRoundFrame(ap.MenuCorner-ap.MenuPadding,"Glass-1.4",{
@@ -32919,15 +32878,15 @@ PaddingBottom=UDim.new(0,ap.TabPadding),
 ak("UICorner",{
 CornerRadius=UDim.new(0,ap.MenuCorner-ap.MenuPadding),
 }),
-ay,
+b,
 ak("Frame",{
-Size=UDim2.new(1,ay and-ap.TabPadding-ap.TabIcon or 0,0,0),
+Size=UDim2.new(1,b and-ap.TabPadding-ap.TabIcon or 0,0,0),
 BackgroundTransparency=1,
 AutomaticSize="Y",
 Name="Title",
 },{
 ak("TextLabel",{
-Text=ax.Name,
+Text=aB.Name,
 TextXAlignment="Left",
 FontFace=Font.new(aj.Font,Enum.FontWeight.Medium),
 ThemeTag={
@@ -32942,7 +32901,7 @@ AutomaticSize="Y",
 Size=UDim2.new(1,0,0,0),
 }),
 ak("TextLabel",{
-Text=ax.Desc or"",
+Text=aB.Desc or"",
 TextXAlignment="Left",
 FontFace=Font.new(aj.Font,Enum.FontWeight.Regular),
 ThemeTag={
@@ -32956,7 +32915,7 @@ LayoutOrder=999,
 AutomaticSize="Y",
 TextWrapped=true,
 Size=UDim2.new(1,0,0,0),
-Visible=ax.Desc and true or false,
+Visible=aB.Desc and true or false,
 Name="Desc",
 }),
 ak("UIListLayout",{
@@ -32969,21 +32928,21 @@ FillDirection="Vertical",
 true
 )
 
-if ax.Locked then
-ax.UIElements.TabItem.Frame.Title.TextLabel.TextTransparency=0.6
-if ax.UIElements.TabIcon then
-ax.UIElements.TabIcon.ImageLabel.ImageTransparency=0.6
+if aB.Locked then
+aB.UIElements.TabItem.Frame.Title.TextLabel.TextTransparency=0.6
+if aB.UIElements.TabIcon then
+aB.UIElements.TabIcon.ImageLabel.ImageTransparency=0.6
 end
 end
 
 if ao.Multi and typeof(ao.Value)=="string"then
-for az,aA in next,ao.Values do
-if typeof(aA)=="table"then
-if aA.Title==ao.Value then
-ao.Value={aA}
+for d,f in next,ao.Values do
+if typeof(f)=="table"then
+if f.Title==ao.Value then
+ao.Value={f}
 end
 else
-if aA==ao.Value then
+if f==ao.Value then
 ao.Value={ao.Value}
 end
 end
@@ -32991,119 +32950,115 @@ end
 end
 
 if ao.Multi then
-local az=false
+local d=false
 if typeof(ao.Value)=="table"then
-for aA,aB in ipairs(ao.Value)do
-local b=typeof(aB)=="table"and aB.Title or aB
-if b==ax.Name then
-az=true
+for f,g in ipairs(ao.Value)do
+local h=typeof(g)=="table"and g.Title or g
+if h==aB.Name then
+d=true
 break
 end
 end
 end
-ax.Selected=az
+aB.Selected=d
 else
-local az=typeof(ao.Value)=="table"and ao.Value.Title or ao.Value
-ax.Selected=az==ax.Name
+local d=typeof(ao.Value)=="table"and ao.Value.Title or ao.Value
+aB.Selected=d==aB.Name
 end
 
-if ax.Selected and not ax.Locked then
-ax.UIElements.TabItem.ImageTransparency=am
+if aB.Selected and not aB.Locked then
+aB.UIElements.TabItem.ImageTransparency=am
 
-ax.UIElements.TabItem.Frame.Title.TextLabel.TextTransparency=0
-if ax.UIElements.TabIcon then
-ax.UIElements.TabIcon.ImageLabel.ImageTransparency=0
+aB.UIElements.TabItem.Frame.Title.TextLabel.TextTransparency=0
+if aB.UIElements.TabIcon then
+aB.UIElements.TabIcon.ImageLabel.ImageTransparency=0
 end
 end
 
-ao.Tabs[av]=ax
-
-ar:Display()
+ao.Tabs[az]=aB
 
 if aq=="Dropdown"then
-aj.AddSignal(ax.UIElements.TabItem.MouseButton1Click,function()
-if ao.Locked or ax.Locked then
+aj.AddSignal(aB.UIElements.TabItem.MouseButton1Click,function()
+if ao.Locked or aB.Locked then
 return
 end
 
 if ao.Multi then
-if not ax.Selected then
-ax.Selected=true
+if not aB.Selected then
+aB.Selected=true
 al(
-ax.UIElements.TabItem,
+aB.UIElements.TabItem,
 0.1,
 {ImageTransparency=am}
 ):Play()
 
-al(ax.UIElements.TabItem.Frame.Title.TextLabel,0.1,{TextTransparency=0}):Play()
-if ax.UIElements.TabIcon then
-al(ax.UIElements.TabIcon.ImageLabel,0.1,{ImageTransparency=0}):Play()
+al(aB.UIElements.TabItem.Frame.Title.TextLabel,0.1,{TextTransparency=0}):Play()
+if aB.UIElements.TabIcon then
+al(aB.UIElements.TabIcon.ImageLabel,0.1,{ImageTransparency=0}):Play()
 end
-table.insert(ao.Value,ax.Original)
+table.insert(ao.Value,aB.Original)
 else
 if not ao.AllowNone and#ao.Value==1 then
 return
 end
-ax.Selected=false
-al(ax.UIElements.TabItem,0.1,{ImageTransparency=1}):Play()
+aB.Selected=false
+al(aB.UIElements.TabItem,0.1,{ImageTransparency=1}):Play()
 
-al(ax.UIElements.TabItem.Frame.Title.TextLabel,0.1,{TextTransparency=0.4}):Play()
-if ax.UIElements.TabIcon then
-al(ax.UIElements.TabIcon.ImageLabel,0.1,{ImageTransparency=0.2}):Play()
+al(aB.UIElements.TabItem.Frame.Title.TextLabel,0.1,{TextTransparency=0.4}):Play()
+if aB.UIElements.TabIcon then
+al(aB.UIElements.TabIcon.ImageLabel,0.1,{ImageTransparency=0.2}):Play()
 end
 
-for az,aA in next,ao.Value do
-if typeof(aA)=="table"and(aA.Title==ax.Name)or(aA==ax.Name)then
-table.remove(ao.Value,az)
+for d,f in next,ao.Value do
+if typeof(f)=="table"and(f.Title==aB.Name)or(f==aB.Name)then
+table.remove(ao.Value,d)
 break
 end
 end
 end
 else
-for az,aA in next,ao.Tabs do
-al(aA.UIElements.TabItem,0.1,{ImageTransparency=1}):Play()
+for d,f in next,ao.Tabs do
+al(f.UIElements.TabItem,0.1,{ImageTransparency=1}):Play()
 
 al(
-aA.UIElements.TabItem.Frame.Title.TextLabel,
+f.UIElements.TabItem.Frame.Title.TextLabel,
 0.1,
 {TextTransparency=0.4}
 ):Play()
-if aA.UIElements.TabIcon then
-al(aA.UIElements.TabIcon.ImageLabel,0.1,{ImageTransparency=0.2}):Play()
+if f.UIElements.TabIcon then
+al(f.UIElements.TabIcon.ImageLabel,0.1,{ImageTransparency=0.2}):Play()
 end
-aA.Selected=false
+f.Selected=false
 end
-ax.Selected=true
-al(ax.UIElements.TabItem,0.1,{ImageTransparency=am}):Play()
+aB.Selected=true
+al(aB.UIElements.TabItem,0.1,{ImageTransparency=am}):Play()
 
-al(ax.UIElements.TabItem.Frame.Title.TextLabel,0.1,{TextTransparency=0}):Play()
-if ax.UIElements.TabIcon then
-al(ax.UIElements.TabIcon.ImageLabel,0.1,{ImageTransparency=0}):Play()
+al(aB.UIElements.TabItem.Frame.Title.TextLabel,0.1,{TextTransparency=0}):Play()
+if aB.UIElements.TabIcon then
+al(aB.UIElements.TabIcon.ImageLabel,0.1,{ImageTransparency=0}):Play()
 end
-ao.Value=ax.Original
+ao.Value=aB.Original
 end
 Callback()
 end)
 elseif aq=="Menu"then
-if not ax.Locked then
-aj.AddSignal(ax.UIElements.TabItem.MouseEnter,function()
-al(ax.UIElements.TabItem,0.08,{ImageTransparency=am}):Play()
+if not aB.Locked then
+aj.AddSignal(aB.UIElements.TabItem.MouseEnter,function()
+al(aB.UIElements.TabItem,0.08,{ImageTransparency=am}):Play()
 end)
-aj.AddSignal(ax.UIElements.TabItem.InputEnded,function()
-al(ax.UIElements.TabItem,0.08,{ImageTransparency=1}):Play()
+aj.AddSignal(aB.UIElements.TabItem.InputEnded,function()
+al(aB.UIElements.TabItem,0.08,{ImageTransparency=1}):Play()
 end)
 end
-aj.AddSignal(ax.UIElements.TabItem.MouseButton1Click,function()
-if ao.Locked or ax.Locked then
+aj.AddSignal(aB.UIElements.TabItem.MouseButton1Click,function()
+if ao.Locked or aB.Locked then
 return
 end
-Callback(aw.Callback or function()end)
+Callback(aA.Callback or function()end)
 end)
 end
 
-RecalculateCanvasSize()
-RecalculateListSize()
-else a.load'S'
+else a.S()
 :New{Parent=ao.UIElements.Menu.Frame.ScrollingFrame}
 end
 end
@@ -33123,16 +33078,17 @@ ao.MenuWidth+6+6+5+5+18+6+6,
 ao.UIElements.MenuCanvas.Size.Y.Scale,
 ao.UIElements.MenuCanvas.Size.Y.Offset
 )
-Callback()
-
-ao.Values=au
+RecalculateCanvasSize()
+RecalculateListSize()
+Callback(nil,ay)
 end
 
-ar:Refresh(ao.Values)
+ar:Refresh(ao.Values,ao.SuppressInitialCallback)
 
-function ar.Select(at,au)
-if au then
-ao.Value=au
+function ar.Select(aw,ax,ay)
+if as or an.Window.Destroyed then return end
+if ax then
+ao.Value=ax
 else
 if ao.Multi then
 ao.Value={}
@@ -33140,14 +33096,44 @@ else
 ao.Value=nil
 end
 end
-ar:Refresh(ao.Values)
+if ao.Multi and typeof(ao.Value)=="string"then
+for az,aA in ipairs(ao.Values)do
+if(typeof(aA)=="table"and aA.Title or aA)==ao.Value then
+ao.Value={aA}
+break
+end
+end
+end
+local az={}
+if ao.Multi and typeof(ao.Value)=="table"then
+for aA,aB in ipairs(ao.Value)do
+az[typeof(aB)=="table"and aB.Title or aB]=true
+end
+end
+local aA=typeof(ao.Value)=="table"and ao.Value.Title or ao.Value
+for aB,b in pairs(ao.Tabs)do
+local d=ao.Multi and az[b.Name]==true or(not ao.Multi and aA==b.Name)
+if b.Selected~=d then
+b.Selected=d
+if not b.Locked then
+b.UIElements.TabItem.ImageTransparency=d and am or 1
+b.UIElements.TabItem.Frame.Title.TextLabel.TextTransparency=d and 0 or 0.4
+if b.UIElements.TabIcon then
+b.UIElements.TabIcon.ImageLabel.ImageTransparency=d and 0 or 0.2
+end
+end
+end
+end
+Callback(nil,ay)
 end
 
 RecalculateListSize()
 RecalculateCanvasSize()
 
-function ar.Open(at)
-if not ao.Locked then
+function ar.Open(aw)
+if not as and not ao.Locked then
+au+=1
+local ax=au
 ao.UIElements.Menu.Visible=true
 ao.UIElements.MenuCanvas.Visible=true
 ao.UIElements.MenuCanvas.Active=true
@@ -33159,7 +33145,7 @@ ImageTransparency=0,
 
 task.spawn(function()
 task.wait(0.1)
-if ao.Locked then
+if as or an.Window.Destroyed or ax~=au or ao.Locked then
 return
 end
 ao.Opened=true
@@ -33169,7 +33155,10 @@ UpdatePosition()
 end
 end
 
-function ar.Close(at)
+function ar.Close(aw)
+if as then return end
+au+=1
+local ax=au
 ao.Opened=false
 
 al(ao.UIElements.Menu,0.25,{
@@ -33179,11 +33168,13 @@ ImageTransparency=1,
 
 task.spawn(function()
 task.wait(0.1)
+if as or an.Window.Destroyed or ax~=au then return end
 ao.UIElements.Menu.Visible=false
 end)
 
 task.spawn(function()
 task.wait(0.25)
+if as or an.Window.Destroyed or ax~=au then return end
 ao.UIElements.MenuCanvas.Visible=false
 ao.UIElements.MenuCanvas.Active=false
 end)
@@ -33199,29 +33190,29 @@ ar:Open()
 end
 )
 
-aj.AddGlobalInputBegan(function(at)
+local aw=aj.AddGlobalInputBegan(function(aw)
 if
-at.UserInputType==Enum.UserInputType.MouseButton1
-or at.UserInputType==Enum.UserInputType.Touch
+aw.UserInputType==Enum.UserInputType.MouseButton1
+or aw.UserInputType==Enum.UserInputType.Touch
 then
-local au=ao.UIElements.MenuCanvas
-local av,aw=au.AbsolutePosition,au.AbsoluteSize
+local ax=ao.UIElements.MenuCanvas
+local ay,az=ax.AbsolutePosition,ax.AbsoluteSize
 
-local ax=ao.UIElements.Dropdown or ao.DropdownFrame.UIElements.Main
-local ay=ax.AbsolutePosition
-local az=ax.AbsoluteSize
+local aA=ao.UIElements.Dropdown or ao.DropdownFrame.UIElements.Main
+local aB=aA.AbsolutePosition
+local b=aA.AbsoluteSize
 
-local aA=af.X>=ay.X
+local d=af.X>=aB.X
+and af.X<=aB.X+b.X
+and af.Y>=aB.Y
+and af.Y<=aB.Y+b.Y
+
+local f=af.X>=ay.X
 and af.X<=ay.X+az.X
 and af.Y>=ay.Y
 and af.Y<=ay.Y+az.Y
 
-local aB=af.X>=av.X
-and af.X<=av.X+aw.X
-and af.Y>=av.Y
-and af.Y<=av.Y+aw.Y
-
-if an.Window.CanDropdown and ao.Opened and not aA and not aB then
+if an.Window.CanDropdown and ao.Opened and not d and not f then
 ar:Close()
 end
 end
@@ -33233,10 +33224,19 @@ or ao.DropdownFrame.UIElements.Main:GetPropertyChangedSignal"AbsolutePosition",
 UpdatePosition
 )
 
+function ar.Destroy(ax)
+if as then return end
+as=true
+at+=1
+au+=1
+aw:Disconnect()
+ao.UIElements.MenuCanvas:Destroy()
+end
+
 return ar
 end
 
-return aa end function a.U()
+return aa end function a.T():typeof(__modImpl())local aa=a.cache.T if not aa then aa={c=__modImpl()}a.cache.T=aa end return aa.c end end do local function __modImpl()
 
 local aa=(cloneref or clonereference or function(aa)
 return aa
@@ -33246,13 +33246,13 @@ aa(game:GetService"UserInputService")
 aa(game:GetService"Players").LocalPlayer:GetMouse()local ae=
 aa(game:GetService"Workspace").CurrentCamera
 
-local af=a.load'j'
+local af=a.j()
 local ag=af.New local ah=
 af.Tween
 
-local ai=a.load'C'.New local aj=a.load't'
+local ai=a.C().New local aj=a.t()
 .New
-local ak=a.load'T'.New local al=
+local ak=a.T().New local al=
 
 workspace.CurrentCamera
 
@@ -33280,6 +33280,7 @@ AllowNone=ao.AllowNone,
 SearchBarEnabled=ao.SearchBarEnabled or false,
 Multi=ao.Multi,
 Callback=ao.Callback or nil,
+SuppressInitialCallback=ao.SuppressInitialCallback==true,
 
 UIElements={},
 
@@ -33296,7 +33297,7 @@ if ap.Values and typeof(ap.Value)=="number"then
 ap.Value=ap.Values[ap.Value]
 end
 
-ap.DropdownFrame=a.load'I'{
+ap.DropdownFrame=a.I(){
 Title=ap.Title,
 Desc=ap.Desc,
 Parent=ao.Parent,
@@ -33351,6 +33352,11 @@ Parent=ap.UIElements.Dropdown and ap.UIElements.Dropdown.Frame
 or ap.DropdownFrame.UIElements.Main,
 })
 
+function ap.Destroy(ar)
+ap.DropdownMenu:Destroy()
+ap.DropdownFrame:Destroy()
+end
+
 function ap.Lock(ar)
 ap.Locked=true
 if ap.Opened or ap.UIElements.MenuCanvas.Visible then
@@ -33370,7 +33376,7 @@ end
 return ap.__type,ap
 end
 
-return am end function a.V()
+return am end function a.U():typeof(__modImpl())local aa=a.cache.U if not aa then aa={c=__modImpl()}a.cache.U=aa end return aa.c end end do local function __modImpl()
 
 
 
@@ -33619,15 +33625,15 @@ end
 return table.concat(at)
 end
 
-return aa end function a.W()
+return aa end function a.V():typeof(__modImpl())local aa=a.cache.V if not aa then aa={c=__modImpl()}a.cache.V=aa end return aa.c end end do local function __modImpl()
 
 local aa={}
 
-local af=a.load'j'
+local af=a.j()
 local ag=af.New
 local ai=af.Tween
 
-local ak=a.load'V'
+local ak=a.V()
 
 function aa.New(al,am,an,ao,ap)
 local aq={
@@ -33863,13 +33869,13 @@ end
 return aq
 end
 
-return aa end function a.X()
+return aa end function a.W():typeof(__modImpl())local aa=a.cache.W if not aa then aa={c=__modImpl()}a.cache.W=aa end return aa.c end end do local function __modImpl()
 
-local aa=a.load'j'local af=
+local aa=a.j()local af=
 aa.New
 
 
-local ag=a.load'W'
+local ag=a.W()
 
 local ai={}
 
@@ -33965,9 +33971,9 @@ am.ElementFrame=ao.CodeFrame
 return am.__type,am
 end
 
-return ai end function a.Y()
+return ai end function a.X():typeof(__modImpl())local aa=a.cache.X if not aa then aa={c=__modImpl()}a.cache.X=aa end return aa.c end end do local function __modImpl()
 
-local aa=a.load'j'
+local aa=a.j()
 local af=aa.New local ag=
 aa.Tween
 
@@ -33984,8 +33990,8 @@ al.RenderStepped
 local ao=am.LocalPlayer
 local ap=ao:GetMouse()
 
-local aq=a.load's'.New
-local ar=a.load't'.New
+local aq=a.s().New
+local ar=a.t().New
 
 local as={
 UICorner=9,
@@ -34019,7 +34025,7 @@ end
 
 az:SetHSVFromRGB(az.Default)
 
-local b=a.load'u'
+local b=a.u()
 local d=b.Create(nil,"Dialog",aw,ax,aw.UIElements.Main.Main)
 
 az.ColorpickerFrame=d
@@ -34762,7 +34768,7 @@ local ax=true
 
 
 
-aw.ColorpickerFrame=a.load'I'{
+aw.ColorpickerFrame=a.I(){
 Title=aw.Title,
 Desc=aw.Desc,
 Parent=av.Parent,
@@ -34840,9 +34846,9 @@ end)
 return aw.__type,aw
 end
 
-return as end function a.Z()
+return as end function a.Y():typeof(__modImpl())local aa=a.cache.Y if not aa then aa={c=__modImpl()}a.cache.Y=aa end return aa.c end end do local function __modImpl()
 
-local aa=a.load'j'
+local aa=a.j()
 local af=aa.New
 local ai=aa.Tween
 
@@ -35220,9 +35226,9 @@ end)
 return an.__type,an
 end
 
-return ak end function a._()
+return ak end function a.Z():typeof(__modImpl())local aa=a.cache.Z if not aa then aa={c=__modImpl()}a.cache.Z=aa end return aa.c end end do local function __modImpl()
 
-local aa=a.load'j'
+local aa=a.j()
 local af=aa.New
 
 local ai={}
@@ -35237,8 +35243,8 @@ BackgroundTransparency=1,
 return"Space",{__type="Space",ElementFrame=am}
 end
 
-return ai end function a.aa()
-local aa=a.load'j'
+return ai end function a._():typeof(__modImpl())local aa=a.cache._ if not aa then aa={c=__modImpl()}a.cache._=aa end return aa.c end end do local function __modImpl()
+local aa=a.j()
 local af=aa.New
 
 local ai={}
@@ -35306,8 +35312,8 @@ end
 return am.__type,am
 end
 
-return ai end function a.ab()
-local aa=a.load'j'
+return ai end function a.aa():typeof(__modImpl())local aa=a.cache.aa if not aa then aa={c=__modImpl()}a.cache.aa=aa end return aa.c end end do local function __modImpl()
+local aa=a.j()
 local af=aa.New
 
 local ai={}
@@ -35391,8 +35397,8 @@ al.Tab
 return am.__type,am
 end
 
-return ai end function a.ac()
-local aa=a.load'j'
+return ai end function a.ab():typeof(__modImpl())local aa=a.cache.ab if not aa then aa={c=__modImpl()}a.cache.ab=aa end return aa.c end end do local function __modImpl()
+local aa=a.j()
 local af=aa.New
 
 local ai={}
@@ -35491,9 +35497,9 @@ end
 return am.__type,am
 end
 
-return ai end function a.ad()
+return ai end function a.ac():typeof(__modImpl())local aa=a.cache.ac if not aa then aa={c=__modImpl()}a.cache.ac=aa end return aa.c end end do local function __modImpl()
 
-local aa=a.load'j'
+local aa=a.j()
 local af=aa.New
 
 local ai={}
@@ -35578,14 +35584,14 @@ al.Tab
 return am.__type,am
 end
 
-return ai end function a.ae()
+return ai end function a.ad():typeof(__modImpl())local aa=a.cache.ad if not aa then aa={c=__modImpl()}a.cache.ad=aa end return aa.c end end do local function __modImpl()
 local aa=(cloneref or clonereference or function(aa)
 return aa
 end)
 
 local af=aa(game:GetService"UserInputService")
 
-local ai=a.load'j'
+local ai=a.j()
 local ak=ai.New
 
 local al={}
@@ -35814,71 +35820,82 @@ ao.Main=at
 return ao.__type,ao
 end
 
-return al end function a.af()
+return al end function a.ae():typeof(__modImpl())local aa=a.cache.ae if not aa then aa={c=__modImpl()}a.cache.ae=aa end return aa.c end end do local function __modImpl()
 
 return{
 Elements={
-Paragraph=a.load'J',
-Button=a.load'K',
-Toggle=a.load'N',
-Slider=a.load'O',
-ProgressBar=a.load'P',
-Keybind=a.load'Q',
-Input=a.load'R',
-Dropdown=a.load'U',
-Code=a.load'X',
-Colorpicker=a.load'Y',
-Section=a.load'Z',
-Divider=a.load'S',
-Space=a.load'_',
-Image=a.load'aa',
-Group=a.load'ab',
-HStack=a.load'ac',
-VStack=a.load'ad',
-Viewport=a.load'ae',
+Paragraph=a.J(),
+Button=a.K(),
+Toggle=a.N(),
+Slider=a.O(),
+ProgressBar=a.P(),
+Keybind=a.Q(),
+Input=a.R(),
+Dropdown=a.U(),
+Code=a.X(),
+Colorpicker=a.Y(),
+Section=a.Z(),
+Divider=a.S(),
+Space=a._(),
+Image=a.aa(),
+Group=a.ab(),
+HStack=a.ac(),
+VStack=a.ad(),
+Viewport=a.ae(),
 
 },
 Load=function(aa,af,ai,ak,al,am,an,ao,ap)
-for aq,ar in next,ai do
-aa[aq]=function(as,at)
-at=at or{}
-at.Tab=ap or aa
-at.ParentType=aa.__type
-at.ParentTable=aa
-at.Index=#aa.Elements+1
-at.GlobalIndex=#ak.AllElements+1
-at.Parent=af
-at.Window=ak
-at.WindUI=al
-at.UIScale=ao
-at.ElementsModule=an local
-
-au, av=ar:New(at)
-av.ParentTable=aa
-av.Tab=ap or aa
-
-if at.Flag and typeof(at.Flag)=="string"then
-if ak.CurrentConfig then
-ak.CurrentConfig:Register(at.Flag,av)
-
-if ak.PendingConfigData and ak.PendingConfigData[at.Flag]then
-local aw=ak.PendingConfigData[at.Flag]
-
-local ax=ak.ConfigManager
-if ax.Parser[aw.__type]then
+local aq,ar=0,false
+local function scheduleShapes()
+if ar then return end
+ar=true
+local as=aq
 task.defer(function()
-local ay,az=pcall(function()
-ax.Parser[aw.__type].Load(av,aw)
+if as~=aq or ak.Destroyed then return end
+ar=false
+aa:UpdateAllElementShapes(aa)
+end)
+end
+for as,at in next,ai do
+aa[as]=function(au,av)
+av=av or{}
+av.Tab=ap or aa
+av.ParentType=aa.__type
+av.ParentTable=aa
+av.Index=#aa.Elements+1
+av.GlobalIndex=#ak.AllElements+1
+av.Parent=af
+av.Window=ak
+av.WindUI=al
+av.UIScale=ao
+av.ElementsModule=an local
+
+aw, ax=at:New(av)
+ax.ParentTable=aa
+ax.Tab=ap or aa
+
+if av.Flag and typeof(av.Flag)=="string"then
+if ak.CurrentConfig then
+ak.CurrentConfig:Register(av.Flag,ax)
+
+if ak.PendingConfigData and ak.PendingConfigData[av.Flag]then
+local ay=ak.PendingConfigData[av.Flag]
+
+local az=ak.ConfigManager
+if az.Parser[ay.__type]then
+task.defer(function()
+local aA,aB=pcall(function()
+az.Parser[ay.__type].Load(ax,ay)
 end)
 
-if ay then
-ak.PendingConfigData[at.Flag]=nil
+if aA then
+ak.PendingConfigData[av.Flag]=nil
 else
 warn(
 "[ WindUI ] Failed to apply pending config for '"
-..at.Flag
+..av.Flag
 .."': "
-..tostring(az)
+..tostring(aB)
 )
 end
 end)
@@ -35886,55 +35903,55 @@ end
 end
 else
 ak.PendingFlags=ak.PendingFlags or{}
-ak.PendingFlags[at.Flag]=av
+ak.PendingFlags[av.Flag]=ax
 end
 end
 
-local aw
-for ax,ay in next,av do
-if typeof(ay)=="table"and ax~="ElementFrame"and ax:match"Frame$"then
-aw=ay
+local ay
+for az,aA in next,ax do
+if typeof(aA)=="table"and az~="ElementFrame"and az:match"Frame$"then
+ay=aA
 break
 end
 end
 
-local ax=av.Destroy
+local az=ax.Destroy
 
-if aw then
-av.ElementFrame=aw.UIElements.Main
-function av.SetTitle(ay,az)
-return aw.SetTitle and aw:SetTitle(az)
-end
-function av.SetDesc(ay,az)
-return aw.SetDesc and aw:SetDesc(az)
-end
-function av.SetImage(ay,az,aA)
-return aw.SetImage and aw:SetImage(az,aA)
-end
-function av.SetThumbnail(ay,az,aA)
-return aw.SetThumbnail and aw:SetThumbnail(az,aA)
-end
-function av.Highlight(ay)
-aw:Highlight()
-end
-end
-
-if aw or ax then
-local ay=false
-function av.Destroy(az)
 if ay then
+ax.ElementFrame=ay.UIElements.Main
+function ax.SetTitle(aA,aB)
+return ay.SetTitle and ay:SetTitle(aB)
+end
+function ax.SetDesc(aA,aB)
+return ay.SetDesc and ay:SetDesc(aB)
+end
+function ax.SetImage(aA,aB,b)
+return ay.SetImage and ay:SetImage(aB,b)
+end
+function ax.SetThumbnail(aA,aB,b)
+return ay.SetThumbnail and ay:SetThumbnail(aB,b)
+end
+function ax.Highlight(aA)
+ay:Highlight()
+end
+end
+
+if ay or az then
+local aA=false
+function ax.Destroy(aB)
+if aA then
 return
 end
-ay=true
-if ax then
-ax(av)
+aA=true
+if az then
+az(ax)
 else
-aw:Destroy()
+ay:Destroy()
 end
-local function removeByIdentity(aA)
-local aB=table.find(aA,av)
-if aB then
-table.remove(aA,aB)
+local function removeByIdentity(b)
+local d=table.find(b,ax)
+if d then
+table.remove(b,d)
 end
 end
 removeByIdentity(ak.AllElements)
@@ -35942,52 +35959,54 @@ removeByIdentity(aa.Elements)
 if ap and ap.Elements~=aa.Elements then
 removeByIdentity(ap.Elements)
 end
-aa:UpdateAllElementShapes(aa)
+scheduleShapes()
 end
 end
 
-table.insert(ak.AllElements,av)
-table.insert(aa.Elements,av)
+table.insert(ak.AllElements,ax)
+table.insert(aa.Elements,ax)
 if ap and ap.Elements~=aa.Elements then
-table.insert(ap.Elements,av)
+table.insert(ap.Elements,ax)
 end
 
 if ak.NewElements then
-aa:UpdateAllElementShapes(aa)
+scheduleShapes()
 end
 
 if am then
-am(av,aa.Elements)
+am(ax,aa.Elements)
 end
-return av
+return ax
 end
 end
-function aa.UpdateAllElementShapes(aq,ar)
-for as,at in next,ar.Elements do
-local au
-for av,aw in pairs(at)do
-if typeof(aw)=="table"and av:match"Frame$"then
-au=aw
+function aa.UpdateAllElementShapes(as,at)
+aq+=1
+ar=false
+for au,av in next,at.Elements do
+local aw
+for ax,ay in pairs(av)do
+if typeof(ay)=="table"and ax:match"Frame$"then
+aw=ay
 break
 end
 end
 
-if not au and at.UpdateShape then
-au=at
+if not aw and av.UpdateShape then
+aw=av
 end
 
-if au then
+if aw then
 
-au.Index=as
-if au.UpdateShape then
+aw.Index=au
+if aw.UpdateShape then
 
-au.UpdateShape(ar)
+aw.UpdateShape(at)
 end
 end
 end
 end
 end,
-}end function a.ag()
+}end function a.af():typeof(__modImpl())local aa=a.cache.af if not aa then aa={c=__modImpl()}a.cache.af=aa end return aa.c end end do local function __modImpl()
 
 local aa=(cloneref or clonereference or function(aa)
 return aa
@@ -35998,11 +36017,11 @@ local af=game:GetService"Players"
 aa(game:GetService"UserInputService")
 local ai=af.LocalPlayer:GetMouse()
 
-local ak=a.load'j'
+local ak=a.j()
 local al=ak.New
 
-local am=a.load'H'.New
-local an=a.load'D'.New
+local am=a.H().New
+local an=a.D().New
 
 
 
@@ -36474,7 +36493,7 @@ end
 
 
 
-local aA=a.load'af'
+local aA=a.af()
 
 aA.Load(
 ar,
@@ -36671,16 +36690,16 @@ ao.OnChangeFunc(aq)
 end
 end
 
-return ao end function a.ah()
+return ao end function a.ag():typeof(__modImpl())local aa=a.cache.ag if not aa then aa={c=__modImpl()}a.cache.ag=aa end return aa.c end end do local function __modImpl()
 
 local aa={}
 
 
-local af=a.load'j'
+local af=a.j()
 local ai=af.New
 local ak=af.Tween
 
-local al=a.load'ag'
+local al=a.ag()
 
 function aa.New(am,an,ao,ap,aq)
 local ar={
@@ -36851,7 +36870,7 @@ return ar
 end
 
 
-return aa end function a.ai()
+return aa end function a.ah():typeof(__modImpl())local aa=a.cache.ah if not aa then aa={c=__modImpl()}a.cache.ah=aa end return aa.c end end do local function __modImpl()
 return{
 Tab="table-of-contents",
 Paragraph="type",
@@ -36864,7 +36883,7 @@ Dropdown="chevrons-up-down",
 Code="terminal",
 Colorpicker="palette",
 ProgressBar="chart-bar",
-}end function a.aj()
+}end function a.ai():typeof(__modImpl())local aa=a.cache.ai if not aa then aa={c=__modImpl()}a.cache.ai=aa end return aa.c end end do local function __modImpl()
 
 local aa=(cloneref or clonereference or function(aa)
 return aa
@@ -36877,29 +36896,30 @@ Margin=8,
 Padding=9,
 }
 
-local ai=a.load'j'
+local ai=a.j()
 local ak=ai.New
 local al=ai.Tween
 
 function af.new(am,an,ao)
-local ap={
+local ap,aq=false,0
+local ar={
 IconSize=18,
 Padding=14,
 Radius=22,
 Width=400,
 MaxHeight=380,
 
-Icons=a.load'ai',
+Icons=a.ai(),
 }
 
-local aq=ak("TextBox",{
+local as=ak("TextBox",{
 Text="",
 PlaceholderText="Search...",
 ThemeTag={
 PlaceholderColor3="Placeholder",
 TextColor3="Text",
 },
-Size=UDim2.new(1,-((ap.IconSize*2)+(ap.Padding*2)),0,0),
+Size=UDim2.new(1,-((ar.IconSize*2)+(ar.Padding*2)),0,0),
 AutomaticSize="Y",
 ClipsDescendants=true,
 ClearTextOnFocus=false,
@@ -36909,17 +36929,17 @@ FontFace=Font.new(ai.Font,Enum.FontWeight.Regular),
 TextSize=18,
 })
 
-local ar=ai.Icon"x"
-local as=ak("ImageLabel",{
-Image=ar and ar[1],
-ImageRectSize=ar and ar[2]and ar[2].ImageRectSize,
-ImageRectOffset=ar and ar[2]and ar[2].ImageRectPosition,
+local at=ai.Icon"x"
+local au=ak("ImageLabel",{
+Image=at and at[1],
+ImageRectSize=at and at[2]and at[2].ImageRectSize,
+ImageRectOffset=at and at[2]and at[2].ImageRectPosition,
 BackgroundTransparency=1,
 ThemeTag={
 ImageColor3="Icon",
 },
 ImageTransparency=0.1,
-Size=UDim2.new(0,ap.IconSize,0,ap.IconSize),
+Size=UDim2.new(0,ar.IconSize,0,ar.IconSize),
 },{
 ak("TextButton",{
 Size=UDim2.new(1,8,1,8),
@@ -36932,7 +36952,7 @@ Text="",
 }),
 })
 
-local at=ak("ScrollingFrame",{
+local av=ak("ScrollingFrame",{
 Size=UDim2.new(1,0,0,0),
 AutomaticCanvasSize="Y",
 ScrollingDirection="Y",
@@ -36947,22 +36967,22 @@ Padding=UDim.new(0,0),
 FillDirection="Vertical",
 }),
 ak("UIPadding",{
-PaddingTop=UDim.new(0,ap.Padding),
-PaddingLeft=UDim.new(0,ap.Padding),
-PaddingRight=UDim.new(0,ap.Padding),
-PaddingBottom=UDim.new(0,ap.Padding),
+PaddingTop=UDim.new(0,ar.Padding),
+PaddingLeft=UDim.new(0,ar.Padding),
+PaddingRight=UDim.new(0,ar.Padding),
+PaddingBottom=UDim.new(0,ar.Padding),
 }),
 })
 
-local au=ai.Icon"search"
-local av=ai.NewRoundFrame(ap.Radius,"Squircle",{
+local aw=ai.Icon"search"
+local ax=ai.NewRoundFrame(ar.Radius,"Squircle",{
 Size=UDim2.new(1,0,1,0),
 ThemeTag={
 ImageColor3="WindowSearchBarBackground",
 },
 ImageTransparency=0,
 },{
-ai.NewRoundFrame(ap.Radius,"Squircle",{
+ai.NewRoundFrame(ar.Radius,"Squircle",{
 Size=UDim2.new(1,0,1,0),
 BackgroundTransparency=1,
 
@@ -36990,26 +37010,26 @@ Size=UDim2.new(1,0,1,0),
 BackgroundTransparency=1,
 },{
 ak("ImageLabel",{
-Image=au and au[1],
-ImageRectSize=au and au[2]and au[2].ImageRectSize,
-ImageRectOffset=au and au[2]and au[2].ImageRectPosition,
+Image=aw and aw[1],
+ImageRectSize=aw and aw[2]and aw[2].ImageRectSize,
+ImageRectOffset=aw and aw[2]and aw[2].ImageRectPosition,
 BackgroundTransparency=1,
 ThemeTag={
 ImageColor3="Icon",
 },
 ImageTransparency=0.1,
-Size=UDim2.new(0,ap.IconSize,0,ap.IconSize),
+Size=UDim2.new(0,ar.IconSize,0,ar.IconSize),
 }),
-aq,
 as,
+au,
 ak("UIListLayout",{
-Padding=UDim.new(0,ap.Padding),
+Padding=UDim.new(0,ar.Padding),
 FillDirection="Horizontal",
 VerticalAlignment="Center",
 }),
 ak("UIPadding",{
-PaddingLeft=UDim.new(0,ap.Padding),
-PaddingRight=UDim.new(0,ap.Padding),
+PaddingLeft=UDim.new(0,ar.Padding),
+PaddingRight=UDim.new(0,ar.Padding),
 }),
 }),
 }),
@@ -37027,9 +37047,9 @@ BackgroundColor3="Outline",
 BackgroundTransparency=0.9,
 Visible=false,
 }),
-at,
+av,
 ak("UISizeConstraint",{
-MaxSize=Vector2.new(ap.Width,ap.MaxHeight),
+MaxSize=Vector2.new(ar.Width,ar.MaxHeight),
 }),
 }),
 ak("UIListLayout",{
@@ -37039,8 +37059,8 @@ FillDirection="Vertical",
 }),
 })
 
-local aw=ak("Frame",{
-Size=UDim2.new(0,ap.Width,0,0),
+local ay=ak("Frame",{
+Size=UDim2.new(0,ar.Width,0,0),
 AutomaticSize="Y",
 Parent=an,
 BackgroundTransparency=1,
@@ -37053,7 +37073,7 @@ ZIndex=99999999,
 ak("UIScale",{
 Scale=0.9,
 }),
-av,
+ax,
 
 
 
@@ -37071,15 +37091,20 @@ av,
 
 })
 
-local function CreateSearchTab(ax,ay,az,aA,aB,b)
-local d=ai.Icon(az)
-local f=ak("TextButton",{
+ai.AddSignal(ay.Destroying,function()
+ap=true
+aq+=1
+end)
+
+local function CreateSearchTab(az,aA,aB,b,d,f)
+local g=ai.Icon(aB)
+local h=ak("TextButton",{
 Size=UDim2.new(1,0,0,0),
 AutomaticSize="Y",
 BackgroundTransparency=1,
-Parent=aA or nil,
+Parent=b or nil,
 },{
-ai.NewRoundFrame(ap.Radius-11,"Squircle",{
+ai.NewRoundFrame(ar.Radius-11,"Squircle",{
 Size=UDim2.new(1,0,0,0),
 Position=UDim2.new(0.5,0,0.5,0),
 AnchorPoint=Vector2.new(0.5,0.5),
@@ -37090,7 +37115,7 @@ ImageColor3="Text",
 ImageTransparency=1,
 Name="Main",
 },{
-ai.NewRoundFrame(ap.Radius-11,"Glass-1",{
+ai.NewRoundFrame(ar.Radius-11,"Glass-1",{
 Size=UDim2.new(1,0,1,0),
 Position=UDim2.new(0.5,0,0.5,0),
 AnchorPoint=Vector2.new(0.5,0.5),
@@ -37109,28 +37134,28 @@ Name="Outline",
 
 
 ak("UIPadding",{
-PaddingTop=UDim.new(0,ap.Padding-2),
-PaddingLeft=UDim.new(0,ap.Padding),
-PaddingRight=UDim.new(0,ap.Padding),
-PaddingBottom=UDim.new(0,ap.Padding-2),
+PaddingTop=UDim.new(0,ar.Padding-2),
+PaddingLeft=UDim.new(0,ar.Padding),
+PaddingRight=UDim.new(0,ar.Padding),
+PaddingBottom=UDim.new(0,ar.Padding-2),
 }),
 ak("ImageLabel",{
-Image=d and d[1],
-ImageRectSize=d and d[2]and d[2].ImageRectSize,
-ImageRectOffset=d and d[2]and d[2].ImageRectPosition,
+Image=g and g[1],
+ImageRectSize=g and g[2]and g[2].ImageRectSize,
+ImageRectOffset=g and g[2]and g[2].ImageRectPosition,
 BackgroundTransparency=1,
 ThemeTag={
 ImageColor3="Icon",
 },
 ImageTransparency=0.1,
-Size=UDim2.new(0,ap.IconSize,0,ap.IconSize),
+Size=UDim2.new(0,ar.IconSize,0,ar.IconSize),
 }),
 ak("Frame",{
-Size=UDim2.new(1,-ap.IconSize-ap.Padding,0,0),
+Size=UDim2.new(1,-ar.IconSize-ar.Padding,0,0),
 BackgroundTransparency=1,
 },{
 ak("TextLabel",{
-Text=ax,
+Text=az,
 ThemeTag={
 TextColor3="Text",
 },
@@ -37144,8 +37169,8 @@ AutomaticSize="Y",
 Name="Title",
 }),
 ak("TextLabel",{
-Text=ay or"",
-Visible=ay and true or false,
+Text=aA or"",
+Visible=aA and true or false,
 ThemeTag={
 TextColor3="Text",
 },
@@ -37165,17 +37190,17 @@ FillDirection="Vertical",
 }),
 }),
 ak("UIListLayout",{
-Padding=UDim.new(0,ap.Padding),
+Padding=UDim.new(0,ar.Padding),
 FillDirection="Horizontal",
 }),
 }),
 },true),
 ak("Frame",{
 Name="ParentContainer",
-Size=UDim2.new(1,-ap.Padding,0,0),
+Size=UDim2.new(1,-ar.Padding,0,0),
 AutomaticSize="Y",
 BackgroundTransparency=1,
-Visible=aB,
+Visible=d,
 
 },{
 ai.NewRoundFrame(99,"Squircle",{
@@ -37187,8 +37212,8 @@ ImageColor3="Text",
 ImageTransparency=0.9,
 }),
 ak("Frame",{
-Size=UDim2.new(1,-ap.Padding-2,0,0),
-Position=UDim2.new(0,ap.Padding+2,0,0),
+Size=UDim2.new(1,-ar.Padding-2,0,0),
+Position=UDim2.new(0,ar.Padding+2,0,0),
 BackgroundTransparency=1,
 },{
 ak("UIListLayout",{
@@ -37206,172 +37231,153 @@ HorizontalAlignment="Right",
 
 
 
-f.Main.Size=UDim2.new(
+h.Main.Size=UDim2.new(
 1,
 0,
 0,
-f.Main.Outline.Frame.Desc.Visible
-and(((ap.Padding-2)*2)+f.Main.Outline.Frame.Title.TextBounds.Y+6+f.Main.Outline.Frame.Desc.TextBounds.Y)
-or(((ap.Padding-2)*2)+f.Main.Outline.Frame.Title.TextBounds.Y)
+h.Main.Outline.Frame.Desc.Visible
+and(((ar.Padding-2)*2)+h.Main.Outline.Frame.Title.TextBounds.Y+6+h.Main.Outline.Frame.Desc.TextBounds.Y)
+or(((ar.Padding-2)*2)+h.Main.Outline.Frame.Title.TextBounds.Y)
 )
 
-ai.AddSignal(f.Main.MouseEnter,function()
-al(f.Main,0.04,{ImageTransparency=0.95}):Play()
+ai.AddSignal(h.Main.MouseEnter,function()
+al(h.Main,0.04,{ImageTransparency=0.95}):Play()
 
 end)
-ai.AddSignal(f.Main.InputEnded,function()
-al(f.Main,0.08,{ImageTransparency=1}):Play()
+ai.AddSignal(h.Main.InputEnded,function()
+al(h.Main,0.08,{ImageTransparency=1}):Play()
 
 end)
-ai.AddSignal(f.Main.MouseButton1Click,function()
-if b then
-b()
+ai.AddSignal(h.Main.MouseButton1Click,function()
+if f then
+f()
 end
 end)
 
-return f
+return h
 end
 
-local function ContainsText(ax,ay)
-if not ay or ay==""then
+local function ContainsText(az,aA)
+if not aA or aA==""then
 return false
 end
 
-if not ax or ax==""then
+if not az or az==""then
 return false
 end
 
-local az=string.lower(ax)
-local aA=string.lower(ay)
+local aB=string.lower(az)
+local b=aA
 
-return string.find(az,aA,1,true)~=nil
+return string.find(aB,b,1,true)~=nil
 end
 
-local function Search(ax)
-if not ax or ax==""then
+local function Search(az)
+if not az or az==""then
 return{}
 end
 
-local ay={}
-for az,aA in next,am.Tabs do
-local aB=ContainsText(aA.Title or"",ax)
-local b={}
+az=string.lower(az)
+local aA={}
+for aB,b in next,am.Tabs do
+local d=ContainsText(b.Title or"",az)
+local f={}
 
-for d,f in next,aA.Elements do
-if f.__type~="Section"then
-local g=ContainsText(f.Title or"",ax)
-local h=ContainsText(f.Desc or"",ax)
+for g,h in next,b.Elements do
+if h.__type~="Section"then
+local i=ContainsText(h.Title or"",az)
+local l=ContainsText(h.Desc or"",az)
 
-if g or h then
-b[d]={
-Title=f.Title,
-Desc=f.Desc,
-Original=f,
-__type=f.__type,
-Index=d,
+if i or l then
+f[g]={
+Title=h.Title,
+Desc=h.Desc,
+Original=h,
+__type=h.__type,
+Index=g,
 }
 end
 end
 end
 
-if aB or next(b)~=nil then
-ay[az]={
-Tab=aA,
-Title=aA.Title,
-Icon=aA.Icon,
-Elements=b,
+if d or next(f)~=nil then
+aA[aB]={
+Tab=b,
+Title=b.Title,
+Icon=b.Icon,
+Elements=f,
 }
 end
 end
-return ay
+return aA
 end
 
-ai.AddSignal(at.UIListLayout:GetPropertyChangedSignal"AbsoluteContentSize",function()
-
-al(at,0.06,{
-Size=UDim2.new(
-1,
-0,
-0,
-math.clamp(
-at.UIListLayout.AbsoluteContentSize.Y+(ap.Padding*2),
-0,
-ap.MaxHeight
-)
-),
-},Enum.EasingStyle.Quint,Enum.EasingDirection.InOut):Play()
-
-
-
-
-
-
+ai.AddSignal(av.UIListLayout:GetPropertyChangedSignal"AbsoluteContentSize",function()
+if ap then return end
+av.Size=UDim2.new(1,0,0,math.clamp(
+av.UIListLayout.AbsoluteContentSize.Y+ar.Padding*2,0,ar.MaxHeight))
 end)
 
-function ap.Open(ax)
+function ar.Open(az)
 task.spawn(function()
-av.Frame.Visible=true
-aw.Visible=true
-al(aw.UIScale,0.12,{Scale=1},Enum.EasingStyle.Quint,Enum.EasingDirection.Out):Play()
+if ap then return end
+ax.Frame.Visible=true
+ay.Visible=true
+al(ay.UIScale,0.12,{Scale=1},Enum.EasingStyle.Quint,Enum.EasingDirection.Out):Play()
 end)
 end
 
-function ap.Close(ax,ay)
-task.spawn(function()
+function ar.Close(az)
+if ap then return end
+ap=true
+aq+=1
 ao()
-av.Frame.Visible=false
-al(aw.UIScale,0.12,{Scale=1},Enum.EasingStyle.Quint,Enum.EasingDirection.Out):Play()
-
-task.wait(0.12)
-aw.Visible=false
-if ay then
-aw:Destroy()
-end
-end)
+ay:Destroy()
 end
 
-ai.AddSignal(as.TextButton.MouseButton1Click,function()
-ap:Close(true)
+ai.AddSignal(au.TextButton.MouseButton1Click,function()
+ar:Close(true)
 end)
 
-ap:Open()
+ar:Open()
 
-function ap.Search(ax,ay)
-ay=ay or""
+function ar.Search(az,aA)
+if ap then return end
+aA=aA or""
 
-local az=Search(ay)
+local aB=Search(aA)
 
-at.Visible=true
-av.Frame.Results.Frame.Visible=true
-for aA,aB in next,at:GetChildren()do
-if aB.ClassName~="UIListLayout"and aB.ClassName~="UIPadding"then
-aB:Destroy()
+av.Visible=true
+ax.Frame.Results.Frame.Visible=true
+for b,d in next,av:GetChildren()do
+if d.ClassName~="UIListLayout"and d.ClassName~="UIPadding"then
+d:Destroy()
 end
 end
 
-if az and next(az)~=nil then
-for aA,aB in next,az do
-local b=ap.Icons.Tab
-local d=CreateSearchTab(aB.Title,nil,b,at,true,function()
-ap:Close()
-am:SelectTab(aA)
+if aB and next(aB)~=nil then
+for b,d in next,aB do
+local f=ar.Icons.Tab
+local g=CreateSearchTab(d.Title,nil,f,av,true,function()
+ar:Close()
+am:SelectTab(b)
 end)
-if aB.Elements and next(aB.Elements)~=nil then
-for f,g in next,aB.Elements do
-local h=ap.Icons[g.__type]
+if d.Elements and next(d.Elements)~=nil then
+for h,i in next,d.Elements do
+local l=ar.Icons[i.__type]
 CreateSearchTab(
-g.Title,
-g.Desc,
-h,
-d:FindFirstChild"ParentContainer"and d.ParentContainer.Frame
+i.Title,
+i.Desc,
+l,
+g:FindFirstChild"ParentContainer"and g.ParentContainer.Frame
 or nil,
 false,
 function()
-ap:Close()
-am:SelectTab(aA)
-if aB.Tab.ScrollToTheElement then
+ar:Close()
+am:SelectTab(b)
+if d.Tab.ScrollToTheElement then
 
-aB.Tab:ScrollToTheElement(g.Index)
+d.Tab:ScrollToTheElement(i.Index)
 end
 
 end
@@ -37380,7 +37386,7 @@ end
 end
 end
 end
-elseif ay~=""then
+elseif aA~=""then
 ak("TextLabel",{
 Size=UDim2.new(1,0,0,70),
 Text="No results found",
@@ -37391,23 +37397,31 @@ TextColor3="Text",
 TextTransparency=0.2,
 BackgroundTransparency=1,
 FontFace=Font.new(ai.Font,Enum.FontWeight.Medium),
-Parent=at,
+Parent=av,
 Name="NotFound",
 })
 else
-at.Visible=false
-av.Frame.Results.Frame.Visible=false
+av.Visible=false
+ax.Frame.Results.Frame.Visible=false
 end
 end
 
-ai.AddSignal(aq:GetPropertyChangedSignal"Text",function()
-ap:Search(aq.Text)
+ai.AddSignal(as:GetPropertyChangedSignal"Text",function()
+aq+=1
+local az,aA=aq,as.Text
+if aA==""then
+ar:Search""
+else
+task.delay(0.1,function()
+if not ap and az==aq then ar:Search(aA)end
+end)
+end
 end)
 
-return ap
+return ar
 end
 
-return af end function a.ak()
+return af end function a.aj():typeof(__modImpl())local aa=a.cache.aj if not aa then aa={c=__modImpl()}a.cache.aj=aa end return aa.c end end do local function __modImpl()
 
 
 
@@ -37421,19 +37435,19 @@ local ak=aa(game:GetService"Players")
 
 local al=workspace.CurrentCamera
 
-local am=a.load'z'
+local am=a.z()
 
-local an=a.load'j'
+local an=a.j()
 local ao=an.New
 local ap=an.Tween
 
 
-local aq=a.load'C'.New
-local ar=a.load's'.New
-local as=a.load'D'.New
-local at=a.load'E'
+local aq=a.C().New
+local ar=a.s().New
+local as=a.D().New
+local at=a.E()
 
-local au=a.load'F'
+local au=a.F()
 
 
 
@@ -38525,7 +38539,7 @@ end
 
 
 
-aw.OpenButtonMain=a.load'G'.New(aw)
+aw.OpenButtonMain=a.G().New(aw)
 
 task.spawn(function()
 if aw.Icon then
@@ -39120,8 +39134,8 @@ if aw.OpenButton and typeof(aw.OpenButton)=="table"then
 aw:EditOpenButton(aw.OpenButton)
 end
 
-local F=a.load'ag'
-local G=a.load'ah'
+local F=a.ag()
+local G=a.ah()
 local H=F.Init(aw,av.WindUI,av.WindUI.TooltipGui)
 H:OnChange(function(J)
 aw.CurrentTab=J
@@ -39195,7 +39209,7 @@ L,
 return M
 end
 
-local J=a.load'u'
+local J=a.u()
 function aw.Dialog(L,M)
 local N={
 Title=M.Title or"Dialog",
@@ -39591,7 +39605,7 @@ end)
 
 
 if not aw.HideSearchBar then
-local V=a.load'aj'
+local V=a.aj()
 local W=false
 
 
@@ -39680,7 +39694,7 @@ end
 
 
 return aw
-end end end
+end end function a.ak():typeof(__modImpl())local aa=a.cache.ak if not aa then aa={c=__modImpl()}a.cache.ak=aa end return aa.c end end end
 
 return function(aa)
 aa=typeof(aa)=="table"and aa or{}
@@ -39688,9 +39702,9 @@ aa=typeof(aa)=="table"and aa or{}
 local af={
 Window=nil,
 Theme=nil,
-Creator=a.load'j',
-LocalizationModule=a.load'k',
-NotificationModule=a.load'l',
+Creator=a.j(),
+LocalizationModule=a.k(),
+NotificationModule=a.l(),
 Themes=nil,
 Transparent=false,
 
@@ -39701,7 +39715,7 @@ UIScale=1,
 ConfigManager=nil,
 Version="0.0.0",
 
-Services=a.load'q',
+Services=a.q(),
 
 OnThemeChangeFunction=nil,
 
@@ -39766,12 +39780,12 @@ end)
 
 local aq=al.LocalPlayer or nil
 
-local ar=ak:JSONDecode(a.load'r')
+local ar=ak:JSONDecode(a.r())
 if ar then
 af.Version=ar.version
 end
 
-local as=a.load'v'
+local as=a.v()
 
 local at=af.Creator
 
@@ -39780,7 +39794,7 @@ local au=at.New
 
 
 
-local av=a.load'z'
+local av=a.z()
 
 local aw=protectgui or(syn and syn.protect_gui)or function()end
 
@@ -39982,10 +39996,10 @@ end
 
 function af.Popup(aA,aB)
 aB.WindUI=af
-return a.load'A'.new(aB,af.ScreenGui.Popups)
+return a.A().new(aB,af.ScreenGui.Popups)
 end
 
-af.Themes=a.load'B'(af,at)
+af.Themes=a.B()(af,at)
 
 at.Themes=af.Themes
 
@@ -39993,7 +40007,7 @@ af:SetTheme"Dark"
 af:SetLanguage(at.Language)
 
 function af.CreateWindow(aA,aB)
-local aC=a.load'ak'
+local aC=a.ak()
 
 if not an:IsStudio()and writefile then
 if not isfolder"WindUI"then

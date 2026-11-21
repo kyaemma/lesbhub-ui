@@ -40,6 +40,7 @@ function Element:New(Config)
 		SearchBarEnabled = Config.SearchBarEnabled or false,
 		Multi = Config.Multi,
 		Callback = Config.Callback or nil,
+		SuppressInitialCallback = Config.SuppressInitialCallback == true,
 
 		UIElements = {},
 
@@ -110,6 +111,11 @@ function Element:New(Config)
 		Parent = Dropdown.UIElements.Dropdown and Dropdown.UIElements.Dropdown.Frame
 			or Dropdown.DropdownFrame.UIElements.Main,
 	})
+
+	function Dropdown:Destroy()
+		Dropdown.DropdownMenu:Destroy()
+		Dropdown.DropdownFrame:Destroy()
+	end
 
 	function Dropdown:Lock()
 		Dropdown.Locked = true

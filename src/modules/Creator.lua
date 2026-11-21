@@ -12,9 +12,8 @@ local DynamicShapeModule = require("./DynamicShape")
 
 local RenderStepped = RunService.Heartbeat
 
-local IconsURL = "https://raw.githubusercontent.com/Footagesus/Icons/main/Main-v2.lua"
 
-local Icons = require("../Icons/Main-v2")
+local Icons = require("./LocalIcons")
 
 Icons.SetIconsType("lucide")
 
@@ -304,7 +303,8 @@ end
 
 function Creator.AddFontObject(Object)
 	Creator.FontObjects[Object] = true
-	Creator.UpdateFont(Creator.Font)
+	local previous = Object.FontFace
+	Object.FontFace = Font.new(Creator.Font, previous.Weight, previous.Style)
 end
 
 function Creator.UpdateFont(FontId)
@@ -1031,42 +1031,12 @@ function Creator:GetElementPosition(elements, targetIndex, isHStack)
 		return nil, 3
 	end
 
-	local function calculate(pos, size)
-		if size == 1 then
-			return "Squircle"
-		end
-		if pos == 1 then
-			return isHStack and "SquircleH-TL-TR" or "Squircle-TL-TR"
-		end
-		if pos == size then
-			return isHStack and "SquircleH-BL-BR" or "Squircle-BL-BR"
-		end
-		return "Square"
-	end
-
-	local groupStart = 1
-	local groupCount = 0
-
-	for i = 1, maxIndex do
-		local el = elements[i]
-		if isDelimiter(el) then
-			if targetIndex >= groupStart and targetIndex <= i - 1 then
-				local pos = targetIndex - groupStart + 1
-				return calculate(pos, groupCount)
-			end
-			groupStart = i + 1
-			groupCount = 0
-		else
-			groupCount = groupCount + 1
-		end
-	end
-
-	if targetIndex >= groupStart and targetIndex <= maxIndex then
-		local pos = targetIndex - groupStart + 1
-		return calculate(pos, groupCount)
-	end
-
-	return nil, 4
+	local first = isDelimiter(elements[targetIndex - 1])
+	local last = isDelimiter(elements[targetIndex + 1])
+	if first and last then return "Squircle" end
+	if first then return isHStack and "SquircleH-TL-TR" or "Squircle-TL-TR" end
+	if last then return isHStack and "SquircleH-BL-BR" or "Squircle-BL-BR" end
+	return "Square"
 end
 
 return Creator
