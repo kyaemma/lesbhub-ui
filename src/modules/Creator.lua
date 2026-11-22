@@ -30,12 +30,13 @@ Creator = {
 	Signals = {},
 	InputBeganHandlers = {},
 	InputBeganConnection = nil,
-	-- Weak keys drop theme and font entries when the instance is collected.
-	-- Values must not retain the instance, or the key stays alive.
-	Objects = setmetatable({}, { __mode = "k" }),
-	LocalizationObjects = setmetatable({}, { __mode = "k" }),
+	-- Strong keys: Luau may collect the userdata of an Instance that no script references while the
+	-- Instance still exists, so weak keys silently dropped live sidebar and topbar objects from theme
+	-- updates. Creator.Sweep removes entries whose instance stayed parentless across two sweeps.
+	Objects = {},
+	LocalizationObjects = {},
 	UIScale = 1,
-	FontObjects = setmetatable({}, { __mode = "k" }),
+	FontObjects = {},
 	Language = string.match(LocalizationService.SystemLocaleId, "^[a-z]+"),
 	Request = http_request or (syn and syn.request) or request,
 	DefaultProperties = {
@@ -225,6 +226,7 @@ function Creator.DisconnectAll()
 	table.clear(Creator.Objects)
 	table.clear(Creator.LocalizationObjects)
 	table.clear(Creator.FontObjects)
+	table.clear(Creator.SweepSuspects)
 	table.clear(Creator.ThemeChangeCallbacks)
 end
 
@@ -389,12 +391,44 @@ function Creator.GetThemeProperty(Property, Theme)
 	return nil
 end
 
+-- lesbhub:sweep-start
+-- Registries hold their instances strongly. A destroyed instance keeps Parent == nil for good, while one
+-- being built is parented within the same frame, so an entry is dropped only when its instance was
+-- parentless at two sweeps at least SweepInterval seconds apart. Registration triggers the sweep, so the
+-- cost scales with UI churn and is nothing while the UI is idle.
+Creator.SweepInterval = 10
+Creator.SweepAt = 0
+Creator.SweepSuspects = {}
+
+function Creator.Sweep(now)
+	now = now or os.clock()
+	if now < Creator.SweepAt then
+		return
+	end
+	Creator.SweepAt = now + Creator.SweepInterval
+	local previous, suspects = Creator.SweepSuspects, {}
+	for _, registry in ipairs({ Creator.Objects, Creator.FontObjects, Creator.LocalizationObjects }) do
+		for object in pairs(registry) do
+			if object.Parent == nil then
+				if previous[object] then
+					registry[object] = nil
+				else
+					suspects[object] = true
+				end
+			end
+		end
+	end
+	Creator.SweepSuspects = suspects
+end
+-- lesbhub:sweep-end
+
 function Creator.AddThemeObject(Object, Properties, skipUpdate)
 	if Creator.Objects[Object] then
 		for prop, value in pairs(Properties) do
 			Creator.Objects[Object].Properties[prop] = value
 		end
 	else
+		Creator.Sweep()
 		Creator.Objects[Object] = { Properties = Properties }
 	end
 
@@ -679,6 +713,12 @@ end]]
 
 function Creator.NewRoundFrame(Radius, Type, Properties, Children, IsButton, ReturnTable)
 	return DynamicShapeModule:New(Radius, Type, Properties, Children, IsButton, nil)
+end
+
+-- Replaces shape images (original asset id -> replacement, "" hides) for new shapes and, under `roots`,
+-- for existing ones. An empty map restores the originals.
+function Creator.SetShapeOverrides(map, roots)
+	DynamicShapeModule.SetOverrides(map, roots)
 end
 
 local New = Creator.New

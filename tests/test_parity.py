@@ -67,7 +67,7 @@ def main():
         "DestroyAll": SRC / "components/Notification.lua",
         "table.find(list, content)": SRC / "elements/Init.lua",
         "MouseButton3": SRC / "elements/Keybind.lua",
-        "__mode": SRC / "modules/Creator.lua",
+        "lesbhub:sweep-start": SRC / "modules/Creator.lua",
     }
     for needle, path in required.items():
         if needle not in path.read_text(encoding="utf-8"):

@@ -1,0 +1,184 @@
+//! Teto theme assets for the hub window, built with the Lesbhub renderer's raster module
+//! (alpha snap, trim, area resize, sticker outline and shadows) and resvg for the vector backdrop.
+#![allow(dead_code)]
+#[path = "C:/dev/Lesbhub/lesbhub-core/crates/lesbhub-renderer/src/radar/raster.rs"]
+mod raster;
+
+use raster::{Effect, Shadow};
+use resvg::{tiny_skia::{self, Pixmap, PixmapPaint, Transform}, usvg};
+use std::{fs, path::Path};
+
+const ASSETS: &str = "C:/dev/Lesbhub/assets";
+const BG_W: u32 = 1120;
+const BG_H: u32 = 720;
+
+fn heart(cx: f64, cy: f64, size: f64, rot: f64, fill: &str, stroke: &str, width: f64, opacity: f64) -> String {
+    let k = size / 100.0;
+    format!(r#"<path transform="translate({cx:.1} {cy:.1}) rotate({rot}) scale({k:.3})" d="M0 34 C-46 4 -38 -36 0 -16 C38 -36 46 4 0 34 Z" fill="{fill}" stroke="{stroke}" stroke-width="{:.2}" stroke-linejoin="round" opacity="{opacity}"/>"#, width / k)
+}
+
+fn sparkle(cx: f64, cy: f64, r: f64, fill: &str, opacity: f64) -> String {
+    let k = r / 50.0;
+    format!(r#"<path transform="translate({cx:.1} {cy:.1}) scale({k:.3})" d="M0 -50 Q5 -5 50 0 Q5 5 0 50 Q-5 5 -50 0 Q-5 -5 0 -50 Z" fill="{fill}" opacity="{opacity}"/>"#)
+}
+
+/// Candy-pink backdrop: light top-left, deeper bottom-right, halftone corners, soft bubbles,
+/// a few outlined hearts and sparkles. Decorations stay near the edges the UI leaves visible.
+fn backdrop_svg() -> String {
+    let mut s = format!(r##"<svg xmlns="http://www.w3.org/2000/svg" width="{BG_W}" height="{BG_H}" viewBox="0 0 {BG_W} {BG_H}">
+<defs>
+<linearGradient id="bg" x1="0" y1="0" x2="{BG_W}" y2="{BG_H}" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#FFF4F9"/><stop offset="0.45" stop-color="#FFDCEB"/><stop offset="1" stop-color="#FFB6D4"/></linearGradient>
+<pattern id="dotsP" width="22" height="22" patternUnits="userSpaceOnUse"><circle cx="11" cy="11" r="3.6" fill="#FF8DBD"/></pattern>
+<pattern id="dotsW" width="22" height="22" patternUnits="userSpaceOnUse"><circle cx="11" cy="11" r="4.2" fill="#FFFFFF"/></pattern>
+<radialGradient id="fadeA" cx="0" cy="0" r="420" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#FFFFFF" stop-opacity="0.32"/><stop offset="1" stop-color="#FFFFFF" stop-opacity="0"/></radialGradient>
+<radialGradient id="fadeB" cx="{BG_W}" cy="{BG_H}" r="520" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#FFFFFF" stop-opacity="0.75"/><stop offset="1" stop-color="#FFFFFF" stop-opacity="0"/></radialGradient>
+<radialGradient id="glow" cx="900" cy="560" r="460" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#FFFFFF" stop-opacity="0.45"/><stop offset="1" stop-color="#FFFFFF" stop-opacity="0"/></radialGradient>
+<mask id="mA"><rect width="{BG_W}" height="{BG_H}" fill="url(#fadeA)"/></mask>
+<mask id="mB"><rect width="{BG_W}" height="{BG_H}" fill="url(#fadeB)"/></mask>
+</defs>
+<rect width="{BG_W}" height="{BG_H}" fill="url(#bg)"/>
+<rect width="{BG_W}" height="{BG_H}" fill="url(#dotsP)" mask="url(#mA)"/>
+<rect width="{BG_W}" height="{BG_H}" fill="url(#dotsW)" mask="url(#mB)"/>
+<rect width="{BG_W}" height="{BG_H}" fill="url(#glow)"/>
+<circle cx="1040" cy="40" r="150" fill="#FFFFFF" opacity="0.22"/>
+<circle cx="70" cy="690" r="170" fill="#FFFFFF" opacity="0.25"/>
+<circle cx="560" cy="-60" r="110" fill="#FFFFFF" opacity="0.18"/>
+"##);
+    // Hearts and sparkles stay out of the sidebar labels: top bar, right edge and the very corners.
+    s += &heart(330.0, 30.0, 22.0, -10.0, "#FFFFFF", "#F0508E", 3.5, 0.8);
+    s += &heart(760.0, 28.0, 22.0, -8.0, "#FFFFFF", "#F0508E", 3.5, 0.7);
+    s += &heart(1060.0, 120.0, 34.0, 10.0, "#FFC6DE", "#F0508E", 4.5, 0.75);
+    s += &heart(34.0, 700.0, 30.0, -14.0, "#FFC6DE", "#F0508E", 4.0, 0.85);
+    s += &sparkle(1000.0, 56.0, 20.0, "#FFFFFF", 0.95);
+    s += &sparkle(640.0, 22.0, 11.0, "#FFFFFF", 0.9);
+    s += &sparkle(470.0, 44.0, 8.0, "#F6679F", 0.5);
+    s += &sparkle(1090.0, 690.0, 18.0, "#FFFFFF", 0.95);
+    s += &sparkle(200.0, 700.0, 12.0, "#FFFFFF", 0.9);
+    s += "</svg>";
+    s
+}
+
+fn render_svg(svg: &str) -> Pixmap {
+    let opt = usvg::Options::default();
+    let tree = usvg::Tree::from_str(svg, &opt).expect("svg");
+    let size = tree.size().to_int_size();
+    let mut pixmap = Pixmap::new(size.width(), size.height()).unwrap();
+    resvg::render(&tree, Transform::identity(), &mut pixmap.as_mut());
+    pixmap
+}
+
+/// Straight-alpha RGBA (or RGB when opaque) PNG at maximum compression.
+fn write_png(path: &Path, pixmap: &Pixmap, opaque: bool) -> usize {
+    let mut raw = Vec::new();
+    for p in pixmap.pixels() {
+        let c = p.demultiply();
+        // Fully transparent pixels carry white instead of black: Roblox filters color and alpha separately
+        // when it scales an image down, so black under transparency bleeds a grey fringe into light edges.
+        if !opaque && c.alpha() == 0 {
+            raw.extend_from_slice(&[255, 255, 255, 0]);
+            continue;
+        }
+        raw.extend_from_slice(&[c.red(), c.green(), c.blue()]);
+        if !opaque {
+            raw.push(c.alpha());
+        }
+    }
+    let mut out = Vec::new();
+    {
+        let mut enc = png::Encoder::new(&mut out, pixmap.width(), pixmap.height());
+        enc.set_color(if opaque { png::ColorType::Rgb } else { png::ColorType::Rgba });
+        enc.set_depth(png::BitDepth::Eight);
+        enc.set_compression(png::Compression::High);
+        enc.set_filter(png::Filter::Adaptive);
+        let mut w = enc.write_header().unwrap();
+        w.write_image_data(&raw).unwrap();
+    }
+    fs::write(path, &out).unwrap();
+    out.len()
+}
+
+const STICKER_SHADOWS: &[Shadow] = &[Shadow { blur: 9, dx: 0, dy: 8, color: [216, 58, 120], opacity: 0.28 }];
+
+/// The mascot as a white-bordered sticker, scaled so its trimmed art is `height` px tall.
+fn sticker(file: &str, height: u32, outline: f32) -> Pixmap {
+    let src = Pixmap::decode_png(&fs::read(Path::new(ASSETS).join(file)).unwrap()).unwrap();
+    let art = raster::snap_and_trim(&src).unwrap();
+    let w = (art.width() as f64 * height as f64 / art.height() as f64).round() as u32;
+    let small = raster::resize(&art, w, height).unwrap();
+    let effect = Effect { outline: Some((outline, [255, 255, 255])), shadows: STICKER_SHADOWS };
+    raster::decorate(&small, &effect).unwrap().0
+}
+
+
+/// A WindUI 9-slice shape redrawn white under every pixel (no grey fringe once tinted light). `corners` lists
+/// which corners are rounded (TL, TR, BR, BL); each is a superellipse quarter of extent `e` and exponent `n`,
+/// 4x4 supersampled.
+fn shape(w: usize, h: usize, corners: [bool; 4], e: f64, n: f64) -> Pixmap {
+    let mut out = vec![0u8; w * h * 4];
+    let (wf, hf) = (w as f64, h as f64);
+    for y in 0..h {
+        for x in 0..w {
+            let mut covered = 0u32;
+            for sy in 0..4 {
+                for sx in 0..4 {
+                    let px = x as f64 + (sx as f64 + 0.5) / 4.0;
+                    let py = y as f64 + (sy as f64 + 0.5) / 4.0;
+                    let left = px < e;
+                    let right = px > wf - e;
+                    let top = py < e;
+                    let bottom = py > hf - e;
+                    let corner = if top && left { 0 } else if top && right { 1 } else if bottom && right { 2 } else if bottom && left { 3 } else { 4 };
+                    let inside = if corner < 4 && corners[corner] {
+                        let dx = if left { (e - px) / e } else { (px - (wf - e)) / e };
+                        let dy = if top { (e - py) / e } else { (py - (hf - e)) / e };
+                        dx.powf(n) + dy.powf(n) <= 1.0
+                    } else {
+                        true
+                    };
+                    if inside { covered += 1; }
+                }
+            }
+            let a = (covered * 255 / 16) as u8;
+            let i = (y * w + x) * 4;
+            out[i] = a; out[i + 1] = a; out[i + 2] = a; out[i + 3] = a;
+        }
+    }
+    Pixmap::from_vec(out, tiny_skia::IntSize::from_wh(w as u32, h as u32).unwrap()).unwrap()
+}
+
+fn main() {
+    let out = Path::new(ASSETS).join("teto");
+    fs::create_dir_all(&out).unwrap();
+
+    // Geometry follows WindUI's DynamicShape slice rects: Squircle 1024 (460 px corners), Circle 1024,
+    // SquircleH 1024x650 and SquircleV 650x1024 (capsules), Squircle-TL-TR 1024 and Squircle-BL-BR whose
+    // stretch row is row 0 (so its image is one flat row plus the bottom corners).
+    let all = [true; 4];
+    let shapes: [(&str, Pixmap); 6] = [
+        ("shape-squircle", shape(1024, 1024, all, 460.0, 5.0)),
+        ("shape-circle", shape(1024, 1024, all, 512.0, 2.0)),
+        ("shape-squircle-h", shape(1024, 650, all, 325.0, 2.6)),
+        ("shape-squircle-v", shape(650, 1024, all, 325.0, 2.6)),
+        ("shape-squircle-tl-tr", shape(1024, 1024, [true, true, false, false], 460.0, 5.0)),
+        ("shape-squircle-bl-br", shape(1024, 461, [false, false, true, true], 460.0, 5.0)),
+    ];
+    for (name, pixmap) in &shapes {
+        println!("{name}.png {} bytes", write_png(&out.join(format!("{name}.png")), pixmap, false));
+    }
+    let bg = render_svg(&backdrop_svg());
+    println!("teto-backdrop.png {} bytes", write_png(&out.join("teto-backdrop.png"), &bg, true));
+
+    let chibi = sticker("chibi-active.png", 440, 9.0);
+    println!("teto-chibi.png {}x{} {} bytes", chibi.width(), chibi.height(), write_png(&out.join("teto-chibi.png"), &chibi, false));
+    let waiting = sticker("chibi-waiting.png", 300, 7.0);
+    println!("teto-chibi-waiting.png {}x{} {} bytes", waiting.width(), waiting.height(), write_png(&out.join("teto-chibi-waiting.png"), &waiting, false));
+
+    // Review composite (not shipped): the backdrop with the mascot where the hub places it.
+    let mut preview = bg.clone();
+    let scale = 0.62;
+    let x = BG_W as f32 - chibi.width() as f32 * scale - 6.0;
+    let y = BG_H as f32 - chibi.height() as f32 * scale + 14.0;
+    preview.draw_pixmap(0, 0, chibi.as_ref(), &PixmapPaint { quality: tiny_skia::FilterQuality::Bicubic, ..Default::default() },
+        Transform::from_row(scale, 0.0, 0.0, scale, x, y), None);
+    write_png(&out.join("preview.png"), &preview, true);
+}

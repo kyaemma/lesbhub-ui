@@ -4,7 +4,7 @@
     | |/ |/ / / _ \/ _  / /_/ // /
     |__/|__/_/_//_/\_,_/\____/___/
 
-    v1.6.66-lesbhub.5  |  2026-11-22  |  Roblox UI library for scripts. Lesbian Hub fork of Footagesus/WindUI.
+    v1.6.66-lesbhub.6  |  2026-11-22  |  Roblox UI library for scripts. Lesbian Hub fork of Footagesus/WindUI.
 
     To view the source code, see the `src/` folder on the official GitHub repository.
 
@@ -138,6 +138,33 @@ b=f
 return e.New
 end
 
+
+
+
+
+d.Overrides={}
+
+function d.Resolve(e)
+local f=d.Overrides[e]
+if f==nil then
+return e
+end
+return f
+end
+
+function d.SetOverrides(e,f)
+d.Overrides=e or{}
+for g,h in ipairs(f or{})do
+for i,j in ipairs(h:GetDescendants())do
+local l=j:GetAttribute"WindUIShape"
+if l then
+j.Image=d.Resolve(l)
+end
+end
+end
+end
+
+
 function d.New(e,f,g,h,i,j,l)
 local m={
 Radius=f or 0,
@@ -183,7 +210,8 @@ end
 function m.SetType(u,v)
 m.Type=v
 local x=GetShape(v)
-r.Image=x.Image
+r:SetAttribute("WindUIShape",x.Image)
+r.Image=d.Resolve(x.Image)
 r.SliceCenter=x.Rect
 m:SetRadius(m.Radius)
 return m
@@ -24845,10 +24873,11 @@ InputBeganHandlers={},
 InputBeganConnection=nil,
 
 
-Objects=setmetatable({},{__mode="k"}),
-LocalizationObjects=setmetatable({},{__mode="k"}),
+
+Objects={},
+LocalizationObjects={},
 UIScale=1,
-FontObjects=setmetatable({},{__mode="k"}),
+FontObjects={},
 Language=string.match(g.SystemLocaleId,"^[a-z]+"),
 Request=http_request or(syn and syn.request)or request,
 DefaultProperties={
@@ -25038,6 +25067,7 @@ end
 table.clear(p.Objects)
 table.clear(p.LocalizationObjects)
 table.clear(p.FontObjects)
+table.clear(p.SweepSuspects)
 table.clear(p.ThemeChangeCallbacks)
 end
 
@@ -25202,12 +25232,44 @@ end
 return nil
 end
 
+
+
+
+
+
+p.SweepInterval=10
+p.SweepAt=0
+p.SweepSuspects={}
+
+function p.Sweep(r)
+r=r or os.clock()
+if r<p.SweepAt then
+return
+end
+p.SweepAt=r+p.SweepInterval
+local u,v=p.SweepSuspects,{}
+for x,z in ipairs{p.Objects,p.FontObjects,p.LocalizationObjects}do
+for A in pairs(z)do
+if A.Parent==nil then
+if u[A]then
+z[A]=nil
+else
+v[A]=true
+end
+end
+end
+end
+p.SweepSuspects=v
+end
+
+
 function p.AddThemeObject(r,u,v)
 if p.Objects[r]then
 for x,z in pairs(u)do
 p.Objects[r].Properties[x]=z
 end
 else
+p.Sweep()
 p.Objects[r]={Properties=u}
 end
 
@@ -25492,6 +25554,12 @@ end
 
 function p.NewRoundFrame(r,u,v,x,z,A)
 return i:New(r,u,v,x,z,nil)
+end
+
+
+
+function p.SetShapeOverrides(r,u)
+i.SetOverrides(r,u)
 end
 
 local r=p.New local u=
@@ -26750,7 +26818,7 @@ New=a.load'p'.New
 return[[
 {
     "name": "windui",
-    "version": "1.6.66-lesbhub.5",
+    "version": "1.6.66-lesbhub.6",
     "main": "./dist/main.lua",
     "repository": "https://github.com/kyaemma/lesbhub-ui",
     "discord": "https://discord.gg/ftgs-development-hub-1300692552005189632",

@@ -108,6 +108,33 @@ function DynamicShapeModule:Init(CreatorObj)
 	return self.New
 end
 
+-- lesbhub:shape-override-start
+-- Image overrides by original shape image: a replacement URL, or "" to hide that shape. Every shape remembers
+-- its original image in the WindUIShape attribute, so SetOverrides can switch existing shapes both ways and
+-- shapes that change type later (AutoChange on resize) keep using the override.
+DynamicShapeModule.Overrides = {}
+
+function DynamicShapeModule.Resolve(image)
+	local override = DynamicShapeModule.Overrides[image]
+	if override == nil then
+		return image
+	end
+	return override
+end
+
+function DynamicShapeModule.SetOverrides(map, roots)
+	DynamicShapeModule.Overrides = map or {}
+	for _, root in ipairs(roots or {}) do
+		for _, object in ipairs(root:GetDescendants()) do
+			local original = object:GetAttribute("WindUIShape")
+			if original then
+				object.Image = DynamicShapeModule.Resolve(original)
+			end
+		end
+	end
+end
+-- lesbhub:shape-override-end
+
 function DynamicShapeModule:New(Radius, Type, Properties, Children, IsButton, IsSlice)
 	local Wrapper = {
 		Radius = Radius or 0,
@@ -153,7 +180,8 @@ function DynamicShapeModule:New(Radius, Type, Properties, Children, IsButton, Is
 	function Wrapper:SetType(NewType)
 		Wrapper.Type = NewType
 		local Shape = GetShape(NewType)
-		ImageLabel.Image = Shape.Image
+		ImageLabel:SetAttribute("WindUIShape", Shape.Image)
+		ImageLabel.Image = DynamicShapeModule.Resolve(Shape.Image)
 		ImageLabel.SliceCenter = Shape.Rect
 		Wrapper:SetRadius(Wrapper.Radius)
 		return Wrapper
