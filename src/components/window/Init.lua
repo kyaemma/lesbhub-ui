@@ -313,6 +313,56 @@ return function(Config)
 		}),
 	})
 
+	-- lesbhub:tab-parking-start
+	-- Hidden tab pages wait in TabParking, outside Main. Roblox recomputes every descendant of a frame
+	-- that moves, hidden ones included, so a drag or resize now only touches the page on screen.
+	-- TabParking copies MainBar's padding and scale and follows its size once a resize or tween settles,
+	-- so a page keeps its layout when it moves in or out.
+	local ParkingScale = New("UIScale", { Scale = Config.WindUI.UIScaleObj.Scale })
+	Window.UIElements.TabParking = New("Frame", {
+		Name = "TabParking",
+		BackgroundTransparency = 1,
+		Visible = false,
+		Size = UDim2.new(
+			0,
+			math.max(0, Window.Size.X.Offset - Window.SideBarWidth),
+			0,
+			math.max(0, Window.Size.Y.Offset - Window.Topbar.Height)
+		),
+		Parent = Config.Parent,
+	}, {
+		ParkingScale,
+		New("UIPadding", {
+			PaddingLeft = UDim.new(0, Window.UIPadding / 2),
+			PaddingRight = UDim.new(0, Window.UIPadding / 2),
+			PaddingBottom = UDim.new(0, Window.UIPadding / 2),
+		}),
+	})
+	local parkingSettling = false
+	local function syncParking()
+		if parkingSettling or Window.Destroyed then
+			return
+		end
+		parkingSettling = true
+		task.spawn(function()
+			local scale, size
+			repeat
+				scale, size = Config.WindUI.UIScaleObj.Scale, Window.UIElements.MainBar.AbsoluteSize
+				task.wait(0.15)
+			until Window.Destroyed
+				or (scale == Config.WindUI.UIScaleObj.Scale and size == Window.UIElements.MainBar.AbsoluteSize)
+			parkingSettling = false
+			if Window.Destroyed or Window.Closed or scale <= 0 or size.X < 1 or size.Y < 1 then
+				return
+			end
+			ParkingScale.Scale = scale
+			Window.UIElements.TabParking.Size = UDim2.fromOffset(size.X / scale, size.Y / scale)
+		end)
+	end
+	Creator.AddSignal(Window.UIElements.MainBar:GetPropertyChangedSignal("AbsoluteSize"), syncParking)
+	Creator.AddSignal(Config.WindUI.UIScaleObj:GetPropertyChangedSignal("Scale"), syncParking)
+	-- lesbhub:tab-parking-end
+
 	local Blur = New("ImageLabel", { -- Shadow
 		Image = "rbxassetid://8992230677",
 		ThemeTag = {

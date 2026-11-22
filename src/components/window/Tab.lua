@@ -284,7 +284,8 @@ function TabModule.New(Config, UIScale)
 		Size = UDim2.new(1, 0, 1, 0),
 		BackgroundTransparency = 1,
 		Visible = false,
-		Parent = Window.UIElements.MainBar,
+		-- Pages start parked; SelectTab moves the shown one into MainBar.
+		Parent = Window.UIElements.TabParking or Window.UIElements.MainBar,
 		ZIndex = 5,
 	}, {
 		Tab.UIElements.ContainerFrame,
@@ -662,11 +663,21 @@ function TabModule:SelectTab(TabIndex)
 		TabModule.Tabs[TabIndex].Selected = true
 
 		task.spawn(function()
+			-- lesbhub:tab-select-start
+			local Parking = Window.UIElements.TabParking
+			local Selected = TabModule.Containers[TabIndex]
 			for _, ContainerObject in next, TabModule.Containers do
 				ContainerObject.AnchorPoint = Vector2.new(0, 0.05)
 				ContainerObject.Visible = false
+				if Parking and ContainerObject ~= Selected and ContainerObject.Parent ~= Parking then
+					ContainerObject.Parent = Parking
+				end
 			end
-			TabModule.Containers[TabIndex].Visible = true
+			if Selected.Parent ~= Window.UIElements.MainBar then
+				Selected.Parent = Window.UIElements.MainBar
+			end
+			Selected.Visible = true
+			-- lesbhub:tab-select-end
 			local TweenService = game:GetService("TweenService")
 
 			local tweenInfo = TweenInfo.new(0.15, Enum.EasingStyle.Quart, Enum.EasingDirection.Out)
