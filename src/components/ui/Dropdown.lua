@@ -122,6 +122,7 @@ function DropdownMenu.New(Config, Dropdown, Element, Type)
 	end)
 
 	local function UpdatePosition()
+		if destroyed or Config.Window.Destroyed or not Dropdown.UIElements.MenuCanvas.Visible then return end
 		local button = Dropdown.UIElements.Dropdown or Dropdown.DropdownFrame.UIElements.Main
 		local menu = Dropdown.UIElements.MenuCanvas
 

@@ -27,6 +27,7 @@ local ConfigManager = require("../../config/Init")
 local Notified = false
 
 return function(Config)
+	local finishResize = function() end
 	local Window = {
 		Title = Config.Title or "UI Library",
 		Author = Config.Author,
@@ -1176,6 +1177,7 @@ return function(Config)
 	end
 
 	function Window:SetSize(size)
+		finishResize(false)
 		if typeof(size) == "UDim2" then
 			Window.Size = size
 
@@ -1216,26 +1218,25 @@ return function(Config)
 		Window.Topbar.ButtonsType == "Mac" and 9 or nil
 	)
 
+	local fullscreenTween
 	local function SetSize(isAnimation)
-		Tween(Window.UIElements.Main, 0.45, {
-			Size = not Window.IsFullscreen and CurrentSize or UDim2.new(
-				0,
-				(Config.WindUI.ScreenGui.AbsoluteSize.X - 20) / Config.WindUI.UIScale,
-				0,
-				(Config.WindUI.ScreenGui.AbsoluteSize.Y - 20 - 52) / Config.WindUI.UIScale
-			),
-		}, Enum.EasingStyle.Quint, Enum.EasingDirection.Out):Play()
-
-		Tween(
-			Window.UIElements.Main,
-			0.45,
-			{ Position = not Window.IsFullscreen and CurrentPos or UDim2.new(0.5, 0, 0.5, 52 / 2) },
-			Enum.EasingStyle.Quint,
-			Enum.EasingDirection.Out
-		):Play()
+		if fullscreenTween then fullscreenTween:Cancel(); fullscreenTween = nil end
+		local size = not Window.IsFullscreen and CurrentSize or UDim2.new(
+			0, (Config.WindUI.ScreenGui.AbsoluteSize.X - 20) / Config.WindUI.UIScale,
+			0, (Config.WindUI.ScreenGui.AbsoluteSize.Y - 20 - 52) / Config.WindUI.UIScale)
+		local position = not Window.IsFullscreen and CurrentPos or UDim2.new(0.5, 0, 0.5, 52 / 2)
+		if isAnimation then
+			fullscreenTween = Tween(Window.UIElements.Main, 0.45, { Size = size, Position = position },
+				Enum.EasingStyle.Quint, Enum.EasingDirection.Out)
+			fullscreenTween:Play()
+		else
+			Window.UIElements.Main.Size = size
+			Window.UIElements.Main.Position = position
+		end
 	end
 
 	function Window:ToggleFullscreen()
+		finishResize(false)
 		local isFullscreen = Window.IsFullscreen
 		-- Creator.SetDraggable(isFullscreen)
 		WindowDragModule:Set(isFullscreen)
@@ -1427,6 +1428,8 @@ return function(Config)
 			return
 		end
 
+		finishResize(false)
+		if fullscreenTween then fullscreenTween:Cancel(); fullscreenTween = nil end
 		local Close = {}
 
 		if Window.OnCloseCallback then
@@ -1738,6 +1741,7 @@ return function(Config)
 	end
 
 	function Window:IsResizable(v)
+		if not v then finishResize(false) end
 		Window.Resizable = v
 		Window.CanResize = v
 	end
@@ -2040,82 +2044,106 @@ return function(Config)
 		return Tag:New(TagConfig, Window.UIElements.Main.Main.Topbar.Center.Holder)
 	end
 
+	-- lesbhub:resize-start
 	local CurResizeInput = Config.WindUI.GenerateGUID()
-	local resizeEndConnection
 	local isResizing = false
-	local initialSize
-	local initialInputPosition
+	local generation = 0
+	local owner, kind, startPosition, startSize, pending, startScale
+	local renderConnection, endConnection, inputEndConnection, focusConnection
 
-	local function startResizing(input)
-		if Window.CanResize then
-			if resizeEndConnection then
-				resizeEndConnection:Disconnect()
-				resizeEndConnection = nil
-				Creator.CompactSignals()
-			end
-			isResizing = true
-			FullScreenIcon.Active = true
-			initialSize = Window.UIElements.Main.Size
-			initialInputPosition = input.Position
-			Tween(ResizeHandle.ImageLabel, 0.1, { ImageTransparency = 0.35 }):Play()
-
-			resizeEndConnection = Creator.AddSignal(input.Changed, function()
-				if input.UserInputState == Enum.UserInputState.End then
-					isResizing = false
-					FullScreenIcon.Active = false
-					if not Config.WindUI.CurrentInput or Config.WindUI.CurrentInput == CurResizeInput then
-						Config.WindUI.CurrentInput = nil
-					end
-					local connection = resizeEndConnection
-					resizeEndConnection = nil
-					if connection then
-						connection:Disconnect()
-						Creator.CompactSignals()
-					end
-					Tween(ResizeHandle.ImageLabel, 0.17, { ImageTransparency = 0.8 }):Play()
-				end
-			end)
+	local function scale()
+		local value = Config.WindUI.UIScaleObj and Config.WindUI.UIScaleObj.Scale or Config.WindUI.UIScale
+		return type(value) == "number" and value > 0 and value or 1
+	end
+	local function valid()
+		return (not isResizing or Config.WindUI.CurrentInput == CurResizeInput)
+			and not Window.Destroyed and not Window.Closed and Window.Resizable and Window.CanResize
+			and not Window.IsFullscreen and Window.UIElements.Main and Window.UIElements.Main.Parent
+			and Window.UIElements.Main.Visible and Config.WindUI.ScreenGui.Enabled
+	end
+	local function applyLatest()
+		if not isResizing or not pending or not valid() then return end
+		local currentScale = scale()
+		if currentScale ~= startScale then
+			-- Rebase at the current pointer when scaling changes, so a scale transition
+			-- cannot reinterpret the accumulated screen-space delta as a jump.
+			startSize, startPosition, startScale = Window.Size, pending, currentScale
+			pending = nil
+			return
+		end
+		local delta = pending - startPosition
+		local x = math.clamp(startSize.X.Offset + delta.X * 2 / currentScale, Window.MinSize.X, Window.MaxSize.X)
+		local y = math.clamp(startSize.Y.Offset + delta.Y * 2 / currentScale, Window.MinSize.Y, Window.MaxSize.Y)
+		pending = nil
+		local previous = Window.UIElements.Main.Size
+		if previous.X.Scale == 0 and previous.Y.Scale == 0 and previous.X.Offset == x and previous.Y.Offset == y then return end
+		local size = UDim2.new(0, x, 0, y)
+		Window.UIElements.Main.Size = size
+		Window.Size = size
+	end
+	finishResize = function(flush)
+		if not isResizing then return end
+		if flush then applyLatest() end
+		isResizing, Window.Resizing = false, false
+		generation += 1
+		for _, connection in ipairs({renderConnection, endConnection, inputEndConnection, focusConnection}) do
+			connection:Disconnect()
+		end
+		renderConnection, endConnection, inputEndConnection, focusConnection = nil, nil, nil, nil
+		owner, kind, startPosition, startSize, pending = nil, nil, nil, nil, nil
+		if Config.WindUI.CurrentInput == CurResizeInput then Config.WindUI.CurrentInput = nil end
+		if not Window.Destroyed then
+			FullScreenIcon.Active = false
+			Tween(ResizeHandle.ImageLabel, 0.17, { ImageTransparency = 0.8 }):Play()
+			if Window.OnResizeFinished then Creator.SafeCallback(Window.OnResizeFinished) end
 		end
 	end
+	function Window:CancelResize() finishResize(false) end
 
 	Creator.AddSignal(ResizeHandle.InputBegan, function(input)
-		if
-			input.UserInputType == Enum.UserInputType.MouseButton1
-			or input.UserInputType == Enum.UserInputType.Touch
-		then
-			if Config.WindUI.CurrentInput and Config.WindUI.CurrentInput ~= CurResizeInput then
-				return
+		local inputType = input.UserInputType
+		if (inputType ~= Enum.UserInputType.MouseButton1 and inputType ~= Enum.UserInputType.Touch)
+			or isResizing or not valid() or Config.WindUI.CurrentInput then return end
+		if fullscreenTween then fullscreenTween:Cancel(); fullscreenTween = nil end
+		Config.WindUI.CurrentInput = CurResizeInput
+		isResizing, Window.Resizing = true, true
+		generation += 1
+		local currentGeneration = generation
+		owner, kind = input, inputType
+		startPosition, startSize, startScale = input.Position, Window.UIElements.Main.Size, scale()
+		pending = nil
+		FullScreenIcon.Active = true
+		Tween(ResizeHandle.ImageLabel, 0.1, { ImageTransparency = 0.35 }):Play()
+		renderConnection = RunService.RenderStepped:Connect(function()
+			if currentGeneration ~= generation then return end
+			if not valid() then finishResize(false); return end
+			applyLatest()
+		end)
+		endConnection = input.Changed:Connect(function()
+			if currentGeneration ~= generation then return end
+			if input.UserInputState == Enum.UserInputState.End then finishResize(true)
+			elseif input.UserInputState == Enum.UserInputState.Cancel then finishResize(false) end
+		end)
+		inputEndConnection = UserInputService.InputEnded:Connect(function(ended)
+			if currentGeneration ~= generation then return end
+			if (kind == Enum.UserInputType.Touch and ended == owner)
+				or (kind == Enum.UserInputType.MouseButton1 and ended.UserInputType == Enum.UserInputType.MouseButton1) then
+				finishResize(true)
 			end
-			-- Claim the pointer only when a resize can actually start. Claiming
-			-- it first left a stale token whenever CanResize was false.
-			if Window.CanResize then
-				Config.WindUI.CurrentInput = CurResizeInput
-				startResizing(input)
-			end
-		end
+		end)
+		focusConnection = UserInputService.WindowFocusReleased:Connect(function()
+			if currentGeneration == generation then finishResize(false) end
+		end)
 	end)
-
 	Creator.AddSignal(UserInputService.InputChanged, function(input)
-		if
-			input.UserInputType == Enum.UserInputType.MouseMovement
-			or input.UserInputType == Enum.UserInputType.Touch
-		then
-			if isResizing and Window.CanResize then
-				local delta = input.Position - initialInputPosition
-				local newSize = UDim2.new(0, initialSize.X.Offset + delta.X * 2, 0, initialSize.Y.Offset + delta.Y * 2)
-
-				newSize = UDim2.new(
-					newSize.X.Scale,
-					math.clamp(newSize.X.Offset, Window.MinSize.X, Window.MaxSize.X),
-					newSize.Y.Scale,
-					math.clamp(newSize.Y.Offset, Window.MinSize.Y, Window.MaxSize.Y)
-				)
-
-				Window.UIElements.Main.Size = newSize
-				Window.Size = newSize
-			end
+		if not isResizing then return end
+		if not valid() then finishResize(false); return end
+		if (kind == Enum.UserInputType.Touch and input == owner)
+			or (kind == Enum.UserInputType.MouseButton1 and input.UserInputType == Enum.UserInputType.MouseMovement) then
+			pending = input.Position
 		end
 	end)
+	-- lesbhub:resize-end
 
 	Creator.AddSignal(ResizeHandle.MouseEnter, function()
 		if Config.WindUI.CurrentInput and Config.WindUI.CurrentInput ~= CurResizeInput then
@@ -2226,6 +2254,7 @@ return function(Config)
 			FullScreenBlur.Active = true
 
 			IsOpen = true
+			finishResize(false)
 			Window.CanResize = false
 		end)
 	end

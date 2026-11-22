@@ -72,6 +72,16 @@ for i=1,100 do m:Refresh({"one","two"},true) end
 flush(); assert(count()==0,"silent refresh callback")
 m:Refresh({"new"},false); flush(); local n,v=count(); assert(n==1 and v=="one" and d.Values[1]=="new")
 m:Select("new",false); m:Select("new",true); flush(); assert(count()==1,"stale callback must be invalidated")
+local canvas=d.UIElements.MenuCanvas
+local previous=canvas.Position
+d.UIElements.Dropdown:GetPropertyChangedSignal("AbsolutePosition"):Fire()
+assert(canvas.Position==previous, "closed dropdown should not reposition")
+m:Open(); local opened=canvas.Position; assert(opened~=previous)
+d.UIElements.Dropdown:GetPropertyChangedSignal("AbsolutePosition"):Fire()
+assert(canvas.Position~=opened, "opening dropdown must track movement")
+m:Close(); flush(); previous=canvas.Position
+d.UIElements.Dropdown:GetPropertyChangedSignal("AbsolutePosition"):Fire()
+assert(canvas.Position==previous, "closed dropdown should remain still")
 m:Select("new",false); m:Destroy(); m:Destroy(); flush(); assert(count()==1 and globalCount==0,"destroy invalidates callback and disconnects")
 local multi,mm,mc=make(true); mm:Select({"two"},true); flush(); assert(mc()==0 and multi.Tabs[2].Selected and not multi.Tabs[1].Selected); mm:Destroy()
 print("Dropdown: silent construction, 100 selects and refreshes, stale callbacks, selection and idempotent cleanup passed")
