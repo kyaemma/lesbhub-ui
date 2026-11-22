@@ -32,6 +32,7 @@ local tweens=0
 local function Tween() tweens+=1; return {Play=function() end} end
 local finishResize=function() end
 local fullscreenTween
+local function finishFullscreen() end
 -- PRODUCTION
 local ended=0
 Window.OnResizeFinished=function() ended+=1 end

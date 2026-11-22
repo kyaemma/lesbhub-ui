@@ -28,6 +28,8 @@ local Notified = false
 
 return function(Config)
 	local finishResize = function() end
+	local finishFullscreen = function() end
+	local openTween
 	local Window = {
 		Title = Config.Title or "UI Library",
 		Author = Config.Author,
@@ -1178,6 +1180,7 @@ return function(Config)
 
 	function Window:SetSize(size)
 		finishResize(false)
+		finishFullscreen()
 		if typeof(size) == "UDim2" then
 			Window.Size = size
 
@@ -1218,44 +1221,98 @@ return function(Config)
 		Window.Topbar.ButtonsType == "Mac" and 9 or nil
 	)
 
-	local fullscreenTween
-	local function SetSize(isAnimation)
-		if fullscreenTween then fullscreenTween:Cancel(); fullscreenTween = nil end
-		local size = not Window.IsFullscreen and CurrentSize or UDim2.new(
-			0, (Config.WindUI.ScreenGui.AbsoluteSize.X - 20) / Config.WindUI.UIScale,
-			0, (Config.WindUI.ScreenGui.AbsoluteSize.Y - 20 - 52) / Config.WindUI.UIScale)
-		local position = not Window.IsFullscreen and CurrentPos or UDim2.new(0.5, 0, 0.5, 52 / 2)
-		if isAnimation then
-			fullscreenTween = Tween(Window.UIElements.Main, 0.45, { Size = size, Position = position },
-				Enum.EasingStyle.Quint, Enum.EasingDirection.Out)
-			fullscreenTween:Play()
-		else
-			Window.UIElements.Main.Size = size
-			Window.UIElements.Main.Position = position
+	-- lesbhub:fullscreen-start
+	local fullscreenGeneration = 0
+	local fullscreenTween, fullscreenConnection, fullscreenShell
+	local fullscreenStartedAt, fullscreenReadyAt
+	local function traceFullscreen(event, ...)
+		if Window.FullscreenDiagnostic then
+			Creator.SafeCallback(Window.FullscreenDiagnostic, event, fullscreenGeneration, ...)
 		end
+	end
+	local function targetFullscreenSize()
+		local uiScale = tonumber(Config.WindUI.UIScale) or 1
+		if uiScale <= 0 then uiScale = 1 end
+		local viewport = Config.WindUI.ScreenGui.AbsoluteSize
+		return UDim2.new(0, math.max(0, viewport.X - 20) / uiScale,
+			0, math.max(0, viewport.Y - 20 - 52) / uiScale)
+	end
+	finishFullscreen = function(completed)
+		if not Window.FullscreenTransitioning then return end
+		if Window.FullscreenDiagnostic then
+			local now = os.clock()
+			local startedAt = fullscreenStartedAt or now
+			traceFullscreen(completed and "end" or "cancel", now - startedAt, now - (fullscreenReadyAt or startedAt))
+		end
+		fullscreenGeneration += 1
+		if fullscreenConnection then fullscreenConnection:Disconnect(); fullscreenConnection = nil end
+		if fullscreenTween then fullscreenTween:Cancel(); fullscreenTween = nil end
+		if fullscreenShell then fullscreenShell:Destroy(); fullscreenShell = nil end
+		Window.FullscreenTransitioning = false
+		if not Window.Destroyed and Window.OnFullscreenTransitionFinished then
+			Creator.SafeCallback(Window.OnFullscreenTransitionFinished)
+		end
+	end
+	local function SetSize(animate)
+		finishFullscreen()
+		if Window.Destroyed then return end
+		local main = Window.UIElements.Main
+		local size = Window.IsFullscreen and targetFullscreenSize() or CurrentSize
+		local position = Window.IsFullscreen and UDim2.new(0.5, 0, 0.5, 52 / 2) or CurrentPos
+		if not size or not position then return end
+		if animate then
+			Window.FullscreenTransitioning = true
+			fullscreenGeneration += 1
+			fullscreenStartedAt, fullscreenReadyAt = nil, nil
+			if Window.FullscreenDiagnostic then fullscreenStartedAt = os.clock() end
+			traceFullscreen("start", Window.IsFullscreen)
+			if Window.OnFullscreenTransitionStarted then Creator.SafeCallback(Window.OnFullscreenTransitionStarted) end
+		end
+		-- Keep the content at its final logical dimensions throughout the effect.
+		local changedSize, changedPosition = main.Size ~= size, main.Position ~= position
+		if changedSize then main.Size = size end
+		if changedPosition then main.Position = position end
+		if not animate then return end
+		if Window.FullscreenDiagnostic then fullscreenReadyAt = os.clock() end
+		traceFullscreen("layout", changedSize and 1 or 0, changedPosition and 1 or 0,
+			fullscreenReadyAt and fullscreenStartedAt and fullscreenReadyAt - fullscreenStartedAt or 0)
+		local generation = fullscreenGeneration
+		-- A translucent border fades over the real, already-laid-out window.
+		-- It never hides or duplicates the interactive content.
+		fullscreenShell = New("Frame", {
+			Name = "FullscreenTransition", BackgroundTransparency = 1,
+			Size = UDim2.new(1, 0, 1, 0), ZIndex = 1000, Parent = main,
+		}, {
+			New("UICorner", { CornerRadius = UDim.new(0, Window.UICorner) }),
+			New("UIStroke", { Name = "Outline", Transparency = 0.7, Thickness = 1,
+				ThemeTag = { Color = "Outline" } }),
+		})
+		fullscreenTween = Tween(fullscreenShell.Outline, 0.25, { Transparency = 1 },
+			Enum.EasingStyle.Quint, Enum.EasingDirection.Out)
+		fullscreenConnection = fullscreenTween.Completed:Connect(function()
+			if generation == fullscreenGeneration then finishFullscreen(true) end
+		end)
+		fullscreenTween:Play()
 	end
 
 	function Window:ToggleFullscreen()
+		if Window.Destroyed or Window.Closed then return end
 		finishResize(false)
+		finishFullscreen()
+		if openTween then openTween:Cancel(); openTween = nil end
 		local isFullscreen = Window.IsFullscreen
-		-- Creator.SetDraggable(isFullscreen)
 		WindowDragModule:Set(isFullscreen)
-
 		if not isFullscreen then
 			CurrentPos = Window.UIElements.Main.Position
 			CurrentSize = Window.UIElements.Main.Size
-
 			Window.CanResize = false
 		else
-			if Window.Resizable then
-				Window.CanResize = true
-			end
+			Window.CanResize = Window.Resizable == true and not Window.SearchActive
 		end
-
 		Window.IsFullscreen = not isFullscreen
-
 		SetSize(true)
 	end
+	-- lesbhub:fullscreen-end
 
 	Creator.AddSignal(Config.WindUI.ScreenGui:GetPropertyChangedSignal("AbsoluteSize"), function()
 		if Window.IsFullscreen then
@@ -1340,12 +1397,14 @@ return function(Config)
 				end)
 			end
 
-			Window.UIElements.Main.Size = UDim2.new(Window.Size.X.Scale, Window.Size.X.Offset, 0, 100)
-
-			Tween(Window.UIElements.Main, 0.8, {
-				--GroupTransparency = 0,
-				Size = Window.Size,
-			}, Enum.EasingStyle.Quint, Enum.EasingDirection.Out):Play()
+			if Window.IsFullscreen then
+				SetSize(false)
+			else
+				Window.UIElements.Main.Size = UDim2.new(Window.Size.X.Scale, Window.Size.X.Offset, 0, 100)
+				openTween = Tween(Window.UIElements.Main, 0.8, { Size = Window.Size },
+					Enum.EasingStyle.Quint, Enum.EasingDirection.Out)
+				openTween:Play()
+			end
 
 			if Window.UIElements.BackgroundGradient then
 				Tween(Window.UIElements.BackgroundGradient, 0.2, {
@@ -1401,7 +1460,7 @@ return function(Config)
 			):Play()
 			WindowDragModule:Set(true)
 
-			if Window.Resizable then
+			if Window.Resizable and not Window.IsFullscreen then
 				Tween(
 					ResizeHandle.ImageLabel,
 					0.45,
@@ -1429,7 +1488,8 @@ return function(Config)
 		end
 
 		finishResize(false)
-		if fullscreenTween then fullscreenTween:Cancel(); fullscreenTween = nil end
+		finishFullscreen()
+		if openTween then openTween:Cancel(); openTween = nil end
 		local Close = {}
 
 		if Window.OnCloseCallback then
@@ -1631,7 +1691,9 @@ return function(Config)
 	end
 
 	function Window:SetUIScale(v)
+		if type(v) ~= "number" or v <= 0 then return Window end
 		Config.WindUI.UIScale = v
+		if Window.IsFullscreen then SetSize(false) end
 		Tween(Config.WindUI.UIScaleObj, 0.2, { Scale = v }, Enum.EasingStyle.Quint, Enum.EasingDirection.Out):Play()
 		return Window
 	end
@@ -2104,7 +2166,7 @@ return function(Config)
 		local inputType = input.UserInputType
 		if (inputType ~= Enum.UserInputType.MouseButton1 and inputType ~= Enum.UserInputType.Touch)
 			or isResizing or not valid() or Config.WindUI.CurrentInput then return end
-		if fullscreenTween then fullscreenTween:Cancel(); fullscreenTween = nil end
+		finishFullscreen()
 		Config.WindUI.CurrentInput = CurResizeInput
 		isResizing, Window.Resizing = true, true
 		generation += 1
@@ -2243,7 +2305,8 @@ return function(Config)
 			SearchBar.new(Window.TabModule, Window.UIElements.Main, function()
 				-- OnClose
 				IsOpen = false
-				if Window.Resizable then
+				Window.SearchActive = false
+				if Window.Resizable and not Window.IsFullscreen and not Window.Closed then
 					Window.CanResize = true
 				end
 
@@ -2254,6 +2317,7 @@ return function(Config)
 			FullScreenBlur.Active = true
 
 			IsOpen = true
+			Window.SearchActive = true
 			finishResize(false)
 			Window.CanResize = false
 		end)
