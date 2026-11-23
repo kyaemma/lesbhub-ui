@@ -333,7 +333,10 @@ function WindUI:CreateWindow(Config)
 	Creator.SetTheme(Theme)
 
 	local hwid = gethwid or function()
-		return Players.LocalPlayer.UserId
+		local player = Players.LocalPlayer
+		-- No-key-system windows do not need a user ID; avoid failing startup
+		-- while the client or executor is still exposing LocalPlayer.
+		return player and player.UserId or "local"
 	end
 
 	local Filename = hwid()
