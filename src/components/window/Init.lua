@@ -337,13 +337,34 @@ return function(Config)
 
 	local UserIcon
 	if Window.User then
+		-- The user panel is constructed even when it starts disabled.
+		-- Roblox/third-party executors may expose LocalPlayer slightly later,
+		-- so neither window creation nor the hidden panel should depend on it.
 		local function GetUserThumb()
-			local ImageId, _ = Players:GetUserThumbnailAsync(
-				Window.User.Anonymous and 1 or Players.LocalPlayer.UserId,
-				Enum.ThumbnailType.HeadShot,
-				Enum.ThumbnailSize.Size420x420
-			)
-			return ImageId
+			if not Window.User.Enabled then return "" end
+			local player = Players.LocalPlayer
+			local userId = Window.User.Anonymous and 1 or (player and player.UserId)
+			if not userId then return "" end
+			local ok, imageId = pcall(function()
+				return Players:GetUserThumbnailAsync(
+					userId,
+					Enum.ThumbnailType.HeadShot,
+					Enum.ThumbnailSize.Size420x420
+				)
+			end)
+			return ok and imageId or ""
+		end
+
+		local function GetDisplayName()
+			if Window.User.Anonymous then return "Anonymous" end
+			local player = Players.LocalPlayer
+			return player and player.DisplayName or "Player"
+		end
+
+		local function GetUserName()
+			if Window.User.Anonymous then return "anonymous" end
+			local player = Players.LocalPlayer
+			return player and player.Name or "player"
 		end
 
 		UserIcon = New("TextButton", {
@@ -406,7 +427,7 @@ return function(Config)
 					BackgroundTransparency = 1,
 				}, {
 					New("TextLabel", {
-						Text = Window.User.Anonymous and "Anonymous" or Players.LocalPlayer.DisplayName,
+						Text = GetDisplayName(),
 						TextSize = 17,
 						ThemeTag = {
 							TextColor3 = "Text",
@@ -420,7 +441,7 @@ return function(Config)
 						Name = "DisplayName",
 					}),
 					New("TextLabel", {
-						Text = Window.User.Anonymous and "anonymous" or Players.LocalPlayer.Name,
+						Text = GetUserName(),
 						TextSize = 15,
 						TextTransparency = 0.6,
 						ThemeTag = {
@@ -461,6 +482,9 @@ return function(Config)
 				Enum.EasingDirection.Out
 			):Play()
 			UserIcon.Visible = true
+			UserIcon.UserIcon.ImageLabel.Image = GetUserThumb()
+			UserIcon.UserIcon.Frame.DisplayName.Text = GetDisplayName()
+			UserIcon.UserIcon.Frame.UserName.Text = GetUserName()
 		end
 		function Window.User:Disable()
 			Window.User.Enabled = false
@@ -479,8 +503,8 @@ return function(Config)
 			end
 			Window.User.Anonymous = v
 			UserIcon.UserIcon.ImageLabel.Image = GetUserThumb()
-			UserIcon.UserIcon.Frame.DisplayName.Text = v and "Anonymous" or Players.LocalPlayer.DisplayName
-			UserIcon.UserIcon.Frame.UserName.Text = v and "anonymous" or Players.LocalPlayer.Name
+			UserIcon.UserIcon.Frame.DisplayName.Text = GetDisplayName()
+			UserIcon.UserIcon.Frame.UserName.Text = GetUserName()
 		end
 
 		if Window.User.Enabled then
