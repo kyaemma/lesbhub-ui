@@ -1895,58 +1895,62 @@ return function(Config)
 			ButtonFrame.Size = UDim2.new(1, 0, 1, 0)
 		end
 
+		-- Prefer side-by-side buttons when their labels genuinely fit.
+		-- Switch to stacked full-width buttons on narrow windows or long
+		-- translations; do not rely on HorizontalFlex squeezing text.
 		local function CheckButtonsOverflow()
-			ButtonsLayout.FillDirection = Enum.FillDirection.Horizontal
-			ButtonsLayout.HorizontalAlignment = Enum.HorizontalAlignment.Right
-			ButtonsLayout.VerticalAlignment = Enum.VerticalAlignment.Center
-			ButtonsContent.AutomaticSize = Enum.AutomaticSize.None
-
+			if not Dialog.UIElements.Main or not Dialog.UIElements.Main.Parent then
+				return
+			end
+			local available = ButtonsContent.AbsoluteSize.X / Config.WindUI.UIScale
+			if available <= 0 then
+				available = DialogTable.Width - 2 * Dialog.UIPadding
+			end
+			local count = #Buttons
+			local gap = 6
+			local equalWidth = (available - gap * math.max(count - 1, 0)) / math.max(count, 1)
+			local stackButtons = false
 			for _, button in ipairs(Buttons) do
-				button.Size = UDim2.new(0, 0, 1, 0)
-				button.AutomaticSize = Enum.AutomaticSize.X
+				local textLabel = button:FindFirstChildWhichIsA("TextLabel", true)
+				if textLabel then
+					local textWidth = textLabel.TextBounds.X / Config.WindUI.UIScale
+					if textWidth <= 0 then
+						-- The label may not have finished its first layout yet.
+						textWidth = #textLabel.Text * (textLabel.TextSize * 0.58)
+					end
+					local icon = button:FindFirstChildWhichIsA("ImageLabel", true)
+					local desiredWidth = textWidth + 38 + (icon and 30 or 0)
+					if desiredWidth > equalWidth then
+						stackButtons = true
+						break
+					end
+				end
 			end
 
-			wait()
-
-			local totalWidth = ButtonsLayout.AbsoluteContentSize.X / Config.WindUI.UIScale
-			local parentWidth = ButtonsContent.AbsoluteSize.X / Config.WindUI.UIScale
-
-			if totalWidth > parentWidth then
-				ButtonsLayout.FillDirection = Enum.FillDirection.Vertical
-				ButtonsLayout.HorizontalAlignment = Enum.HorizontalAlignment.Right
-				ButtonsLayout.VerticalAlignment = Enum.VerticalAlignment.Bottom
-				ButtonsContent.AutomaticSize = Enum.AutomaticSize.Y
-
-				for _, button in ipairs(Buttons) do
-					button.Size = UDim2.new(1, 0, 0, 36)
-					button.AutomaticSize = Enum.AutomaticSize.None
-				end
-			else
-				local availableSpace = parentWidth - totalWidth
-				if availableSpace > 0 then
-					local smallestButton = nil
-					local smallestWidth = math.huge
-
-					for _, button in ipairs(Buttons) do
-						local buttonWidth = button.AbsoluteSize.X / Config.WindUI.UIScale
-						if buttonWidth < smallestWidth then
-							smallestWidth = buttonWidth
-							smallestButton = button
-						end
-					end
-
-					if smallestButton then
-						smallestButton.Size = UDim2.new(0, smallestWidth + availableSpace, 1, 0)
-						smallestButton.AutomaticSize = Enum.AutomaticSize.None
-					end
+			ButtonsLayout.FillDirection = stackButtons and "Vertical" or "Horizontal"
+			ButtonsLayout.HorizontalAlignment = "Center"
+			ButtonsLayout.VerticalAlignment = stackButtons and "Bottom" or "Center"
+			ButtonsLayout.HorizontalFlex = "Fill"
+			ButtonsContent.AutomaticSize = "None"
+			ButtonsContent.Size = UDim2.new(1, 0, 0, stackButtons and (36 * count + gap * math.max(count - 1, 0)) or 36)
+			for _, button in ipairs(Buttons) do
+				button.AutomaticSize = "None"
+				button.Size = stackButtons and UDim2.new(1, 0, 0, 36)
+					or UDim2.new(0, 0, 0, 36)
+				local label = button:FindFirstChildWhichIsA("TextLabel", true)
+				if label then
+					label.TextTruncate = Enum.TextTruncate.AtEnd
 				end
 			end
 		end
 
-		-- Creator.AddSignal(Dialog.UIElements.Main:GetPropertyChangedSignal("AbsoluteSize"), CheckButtonsOverflow)
-		-- CheckButtonsOverflow()
+		-- Wait for text layout, then adapt. Updating an open dialog's size
+		-- is safe because the outer container uses AutomaticSize.
+		task.spawn(function()
+			task.wait()
+			CheckButtonsOverflow()
+		end)
 
-		-- wait()
 		Dialog:Open()
 
 		return Dialog
