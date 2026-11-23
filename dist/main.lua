@@ -39152,6 +39152,43 @@ table.insert(U,X)
 X.Size=UDim2.new(1,0,1,0)
 end
 
+-- Lesbhub WindUI fork: fit dialog action buttons for translated labels.
+task.spawn(function()
+    task.wait()
+    if not O.UIElements.Main or not O.UIElements.Main.Parent then return end
+    local count=#U
+    if count==0 then return end
+    local available=T.AbsoluteSize.X
+    if available<=0 then available=N.Width-2*O.UIPadding end
+    local each=(available-6*math.max(count-1,0))/count
+    local vertical=false
+    for _,button in ipairs(U)do
+        local label=button:FindFirstChildWhichIsA("TextLabel",true)
+        if label then
+            local natural=label.TextBounds.X
+            if natural<=0 then natural=#label.Text*label.TextSize*0.58 end
+            local icon=button:FindFirstChildWhichIsA("ImageLabel",true)
+            if natural+38+(icon and 30 or 0)>each then
+                vertical=true
+                break
+            end
+        end
+    end
+    S.FillDirection=vertical and "Vertical" or "Horizontal"
+    S.HorizontalAlignment="Center"
+    S.VerticalAlignment=vertical and "Bottom" or "Center"
+    S.HorizontalFlex="Fill"
+    T.AutomaticSize="None"
+    T.Size=UDim2.new(1,0,0,vertical and (36*count+6*math.max(count-1,0))or 36)
+    for _,button in ipairs(U)do
+        button.AutomaticSize="None"
+        button.Size=vertical and UDim2.new(1,0,0,36)or UDim2.new(0,0,0,36)
+        local label=button:FindFirstChildWhichIsA("TextLabel",true)
+        if label then label.TextTruncate=Enum.TextTruncate.AtEnd end
+    end
+end)
+
+
 
 
 
