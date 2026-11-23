@@ -37594,13 +37594,26 @@ end
 
 local f
 if aw.User then
-local function GetUserThumb()local
-g=ak:GetUserThumbnailAsync(
-aw.User.Anonymous and 1 or ak.LocalPlayer.UserId,
-Enum.ThumbnailType.HeadShot,
-Enum.ThumbnailSize.Size420x420
-)
-return g
+-- Safeguard the optional user panel during early executor/client initialization.
+local function GetUserThumb()
+if not aw.User.Enabled then return "" end
+local player=ak.LocalPlayer
+local userId=aw.User.Anonymous and 1 or (player and player.UserId)
+if not userId then return "" end
+local ok,result=pcall(function()
+return ak:GetUserThumbnailAsync(userId,Enum.ThumbnailType.HeadShot,Enum.ThumbnailSize.Size420x420)
+end)
+return ok and result or ""
+end
+local function GetDisplayName()
+if aw.User.Anonymous then return "Anonymous" end
+local player=ak.LocalPlayer
+return player and player.DisplayName or "Player"
+end
+local function GetUserName()
+if aw.User.Anonymous then return "anonymous" end
+local player=ak.LocalPlayer
+return player and player.Name or "player"
 end
 
 f=ao("TextButton",{
@@ -37663,7 +37676,7 @@ AutomaticSize="XY",
 BackgroundTransparency=1,
 },{
 ao("TextLabel",{
-Text=aw.User.Anonymous and"Anonymous"or ak.LocalPlayer.DisplayName,
+Text=GetDisplayName(),
 TextSize=17,
 ThemeTag={
 TextColor3="Text",
@@ -37677,7 +37690,7 @@ TextXAlignment="Left",
 Name="DisplayName",
 }),
 ao("TextLabel",{
-Text=aw.User.Anonymous and"anonymous"or ak.LocalPlayer.Name,
+Text=GetUserName(),
 TextSize=15,
 TextTransparency=0.6,
 ThemeTag={
@@ -37718,6 +37731,9 @@ Enum.EasingStyle.Quint,
 Enum.EasingDirection.Out
 ):Play()
 f.Visible=true
+f.UserIcon.ImageLabel.Image=GetUserThumb()
+f.UserIcon.Frame.DisplayName.Text=GetDisplayName()
+f.UserIcon.Frame.UserName.Text=GetUserName()
 end
 function aw.User.Disable(g)
 aw.User.Enabled=false
@@ -37736,8 +37752,8 @@ h=true
 end
 aw.User.Anonymous=h
 f.UserIcon.ImageLabel.Image=GetUserThumb()
-f.UserIcon.Frame.DisplayName.Text=h and"Anonymous"or ak.LocalPlayer.DisplayName
-f.UserIcon.Frame.UserName.Text=h and"anonymous"or ak.LocalPlayer.Name
+f.UserIcon.Frame.DisplayName.Text=GetDisplayName()
+f.UserIcon.Frame.UserName.Text=GetUserName()
 end
 
 if aw.User.Enabled then
@@ -39851,7 +39867,8 @@ local d=aa.Themes[aA.Theme or"Dark"]
 as.SetTheme(d)
 
 local f=gethwid or function()
-return ak.LocalPlayer.UserId
+local player=ak.LocalPlayer
+return player and player.UserId or "local"
 end
 
 local g=f()
